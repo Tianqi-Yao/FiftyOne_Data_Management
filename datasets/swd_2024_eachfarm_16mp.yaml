@@ -3,6 +3,7 @@
 name: swd_2024_eachfarm_16mp
 defaults: { year: 2024, device: 16MP, status: cold }   # 所有组共享的字段
 compute_metadata: true
+parse_filename: true   # 从文件名解析 date / time / focal_length 三个字段
 sources:
   # ---- air1 / auto: 585 张 ----
   - set: { site: air1, location: Airport COMO Elderberry Farm, focus: auto }   # TODO location

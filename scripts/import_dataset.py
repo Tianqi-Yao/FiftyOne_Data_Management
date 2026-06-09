@@ -38,18 +38,24 @@
     compute_metadata: true   # 逐张读图算宽高/大小（HDD 上图多会慢）
     drop_corrupt: true       # 默认 true：算 metadata 时打不开的图，先记到
                              #   exports/<name>_corrupt.txt，再从数据集剔除
+    parse_filename: true     # 从文件名解析 date(DateField)/time/focal_length(IntField)
+                             #   解析不出的仍导入，但标 tag qc:name_unparsed，
+                             #   路径写到 exports/<name>_unparsed_names.txt 待补救
 """
 import os
 import re
 import sys
 import glob
 import yaml
+from datetime import date as _date, datetime as _datetime
 import fiftyone as fo
 from fiftyone import ViewField as F
 from PIL import Image
 
 IMG_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff")
 RES_RE = re.compile(r"(\d{3,4})x(\d{3,4})")
+# 仓库根（脚本在 scripts/ 下），报告统一写到这里的 exports/，与运行目录无关
+REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def collect_from_roots(roots, exclude_dirs):
@@ -89,6 +95,52 @@ def resolution(path):
         return None
 
 
+# 文件名格式（SWD，历史迭代出多种）：
+#   标准 fixed/auto : MMDD_HHMM_<focal>           0826_1205_672.jpg
+#   unknown         : MMDD_HHMM                   0507_1903.jpg   （无焦距）
+#   captures/sweep  : ..._YYYY-MM-DD HH_MM_SS_... 焦距在文件夹 focus_<NNN>
+#   image_ 格式     : image_YYYYMMDD_HHMMSS       image_20240507_190507.jpg
+_STD_RE = re.compile(r"^(\d{2})(\d{2})_(\d{2})(\d{2})(?:_(\d+))?")
+_CAP_RE = re.compile(r"(\d{4})-(\d{2})-(\d{2}) (\d{2})_(\d{2})_(\d{2})")
+_IMG_RE = re.compile(r"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})")
+
+
+def parse_name(path, year):
+    """从文件名解析 date / time / focal_length（解析不到的就不加）。"""
+    stem = os.path.splitext(os.path.basename(path))[0]
+    out = {}
+    m = _STD_RE.match(stem)
+    if m:
+        mm, dd, hh, mi, foc = m.groups()
+        if year:
+            try:
+                out["date"] = _date(int(year), int(mm), int(dd))
+            except ValueError:
+                pass
+        out["time"] = f"{hh}:{mi}"
+        # 固定假日期 + 真实时分：App 里带 HH:MM 的可拖时段滑块
+        out["capture_tod"] = _datetime(2000, 1, 1, int(hh), int(mi))
+        if foc:
+            out["focal_length"] = int(foc)
+    else:
+        # captures 的 "YYYY-MM-DD HH_MM_SS" 或 image_ 的 "YYYYMMDD_HHMMSS"
+        m2 = _CAP_RE.search(stem) or _IMG_RE.search(stem)
+        if m2:
+            y, mo, dd, hh, mi, _ = m2.groups()
+            try:
+                out["date"] = _date(int(y), int(mo), int(dd))
+            except ValueError:
+                pass
+            out["time"] = f"{hh}:{mi}"
+            out["capture_tod"] = _datetime(2000, 1, 1, int(hh), int(mi))
+    # 文件名没给焦距时，回退到 captures 文件夹的 focus_<NNN>
+    if "focal_length" not in out:
+        mf = re.search(r"focus_(\d+)", path)
+        if mf:
+            out["focal_length"] = int(mf.group(1))
+    return out
+
+
 def build_plan(m):
     """返回 {filepath: 字段dict}。靠后的 source 覆盖靠前的。"""
     defaults = m.get("defaults", {})
@@ -124,7 +176,31 @@ def build_plan(m):
 
     if overlaps:
         print(f"[warn] {overlaps} 张图被多个 source 命中，按靠后的 source 取值")
+
+    # 从文件名解析 date / time / focal_length；解析不出的打 qc:name_unparsed
+    if m.get("parse_filename"):
+        for p, attrs in plan.items():
+            info = parse_name(p, attrs.get("year"))
+            attrs.update(info)
+            if "time" not in info:        # 没拿到日期时间 = 命名异常
+                attrs["_tags"].append("qc:name_unparsed")
+
     return plan
+
+
+def write_report(name, suffix, paths, msg):
+    """把一批异常路径写到 <repo>/exports/<name>_<suffix>.txt 并打印摘要。"""
+    exports = os.path.join(REPO, "exports")
+    os.makedirs(exports, exist_ok=True)
+    log = os.path.join(exports, f"{name}_{suffix}.txt")
+    with open(log, "w") as fh:
+        fh.write("\n".join(paths) + "\n")
+    print(f"[warn] {msg} {len(paths)} 张（清单 {log}）：")
+    for p in paths[:10]:
+        print(f"    {p}")
+    if len(paths) > 10:
+        print(f"    ... 共 {len(paths)} 张")
+    return log
 
 
 def main(manifest_path):
@@ -135,6 +211,12 @@ def main(manifest_path):
     plan = build_plan(m)
     if not plan:
         sys.exit(f"[err] 没匹配到任何图片，检查清单：{manifest_path}")
+
+    # 文件名解析失败的，已标 qc:name_unparsed —— 报告出来，留给补救代码
+    unparsed = [p for p in sorted(plan) if "qc:name_unparsed" in plan[p]["_tags"]]
+    if unparsed:
+        write_report(name, "unparsed_names", unparsed,
+                     "文件名无法解析 date/time，已标 qc:name_unparsed")
 
     if name in fo.list_datasets():
         fo.delete_dataset(name)
@@ -155,15 +237,7 @@ def main(manifest_path):
             bad = dataset.match(F("metadata.width") == None)  # noqa: E711
             paths = bad.values("filepath")
             if paths:
-                os.makedirs("exports", exist_ok=True)
-                log = os.path.join("exports", f"{name}_corrupt.txt")
-                with open(log, "w") as fh:
-                    fh.write("\n".join(paths) + "\n")
-                print(f"[warn] 损坏/无法读取 {len(paths)} 张，已剔除（清单见 {log}）：")
-                for p in paths[:10]:
-                    print(f"    {p}")
-                if len(paths) > 10:
-                    print(f"    ... 共 {len(paths)} 张")
+                write_report(name, "corrupt", paths, "损坏/无法读取，已剔除")
                 dataset.delete_samples(bad.values("id"))
 
     print(f"[ok] {name}: {len(dataset)} 张图")

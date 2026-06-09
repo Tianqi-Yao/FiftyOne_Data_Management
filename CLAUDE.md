@@ -1,28 +1,61 @@
-# CLAUDE.md — SWD 图片数据管理
+# CLAUDE.md — SWD 图片数据管理（中文）
+
+科研**数据管理**项目（用 FiftyOne 管理 SWD 图片）。**不是**企业软件项目。
+代码服务于数据管理，不为架构而架构。English: `CLAUDE.md`。
 
 ## 核心约束（不可违反）
 
-1. **保持目录结构简单**，研究项目风格，不是企业软件。
-2. **目录深度 ≤ 3 层**（项目仓库内）。新功能不许靠加深目录解决。
-3. **优先新增脚本，不要新增框架**。一个任务 = `scripts/` 里一个动词命名的脚本。
-4. **优先复用已有目录**：`scripts/ datasets/ notebooks/ exports/ data/`。先问「能不能放进现有目录」，再考虑新建。
-5. **不要堆 docs**。说明写进 `README.md` 或脚本顶部注释，不要建文档目录树。
-6. **不要过度抽象**：不要 src/core/manager/service/factory 这类分层，不要为复用而提前抽象。
-7. 这是**科研数据管理项目**，不是企业软件项目。代码服务于数据管理，不为架构而架构。
-8. **FiftyOne 是主要数据管理工具**。组织/筛选/检索用 FiftyOne 的 dataset/view/tag，不要自己造管理系统。
-9. **SSD = Hot Data**（正在标注/处理/训练）：`/mnt/D/SWD/01_Data`。
-10. **16TB_HDD = Cold Data**（原始/历史/已完成）：`/media/tianqi/16tb/SWD/01_Data`。
-11. **图片不进 git 仓库**，原地引用 + `data/` 下软链接；FiftyOne 用绝对路径引用。
+1. 目录保持**简单**、研究风格。仓库内目录深度 **≤ 3 层**。
+2. **优先新增/扩展 `scripts/` 里的脚本**，不要引入框架。
+3. **复用已有目录**：`scripts/ datasets/ notebooks/ exports/ data/`。先问"能不能放进
+   现有目录"再新建。
+4. 不要 `src/core/manager/service/factory` 这类分层。**不要过度抽象。**
+5. 不要堆 `docs/` 目录树——说明写进 `README*.md` 或脚本顶部 docstring。
+6. **FiftyOne 是主要数据管理工具。** 组织/筛选/检索用 dataset / view / field / tag，
+   不要另造一套管理系统。
+7. **图片不进 git。** 原地引用，FiftyOne 只存绝对路径。`data/hot`、`data/cold` 是软
+   链接（gitignored）。
 
-## 约定速查
+## 运行环境
 
-- 存储树（冷热同构）：`<tier>/SWD/01_Data/<year>/<location>/<device>/<batch_date>/*.jpg`
-- Dataset 名：`swd_<year>_<location>_<device>`（小写 snake，前缀恒为 `swd_`）
-- 横切维度（年份/地点/设备/划分/质检）用 **tag**，不堆进名字。
-- `datasets/*.yaml` 是真相源，FiftyOne 数据库可丢弃重建。
+- 一律用 **`conda run -n fif`**（fiftyone 1.13.4）。名叫 `fiftyone` 的环境是 1.10.0，
+  与共享数据库 `~/.fiftyone` **不兼容**。
+- FiftyOne 数据库：默认 `~/.fiftyone`。
 
-## 新增东西前先问自己
+## 存储
 
-- 这能不能只加一个 `scripts/*.py` 解决？→ 能就这么做。
-- 这是不是又在 FiftyOne 之外造轮子？→ 是就停下，用 FiftyOne。
-- 这会不会让目录变深或变抽象？→ 会就换简单做法。
+- **SSD = 热数据**（在用）：`/mnt/D/SWD/01_Data`
+- **16TB HDD = 冷数据**（原始/历史/已完成）：`/media/tianqi/16tb/SWD/01_Data`
+- 原始目录**结构不统一**（历史代码迭代）。**按图片实际像素尺寸判定，不靠文件夹名。**
+  不要相信固定深度的 glob 能取全。
+
+## 数据模型
+
+- 结构化属性存成**字段**（App 自动出好用的 UI）：`site`、`location`、`focus`、`year`、
+  `device`、`status`、`date`(DateField)、`capture_tod`(DateTimeField，一天内时段，
+  占位日期 2000-01-01)、`focal_length`(IntField)、`time`(字符串)。
+- **`tags` 只用于工作流 / 质检**（如 `qc:name_unparsed`，以后 reviewed/good/discard）。
+- `datasets/*.yaml` 是**真相源**（可复现、可手改）。数据库可删可重建，重跑导入即可。
+- 数据集命名：`swd_<year>_<scope>_<device>`，如 `swd_2024_eachfarm_16mp`。
+
+## 脚本（保持这套；扩展，不要增殖）
+
+- `import_dataset.py <清单>` —— 一次跑完的全量导入（收集 → 字段 → `compute_metadata`
+  → 剔损坏 → 解析文件名）。
+- `make_sources.py <根> <WxH> <out.yaml>` —— 扫描目录，生成可编辑的 `sources:` 映射
+  草稿（按 site/focus 分组，逐目录列出供手改）。
+- `enrich_names.py <数据集|清单>` —— 可重复跑、**不读图片**：(重新)解析文件名 →
+  `date/time/capture_tod/focal_length`。导入过后只想重算文件名派生字段时用。与
+  `import_dataset.py` 共用 `parse_name`（单一来源）。
+
+## 异常：浮出来，绝不静默丢弃
+
+- 损坏图（读不出 metadata）→ **剔除** + 记录到 `exports/<name>_corrupt.txt`。
+- 文件名解析不出 → **保留** + 打 tag `qc:name_unparsed` + 记录到
+  `exports/<name>_unparsed_names.txt`。以后补救（扩展 `parse_name` 或单独处理）。
+
+## 动手加东西前先问自己
+
+- 这能不能只加一个 `scripts/*.py`？→ 那就这么做。
+- 是不是在重造 FiftyOne 已有的能力？→ 停，用 FiftyOne。
+- 会不会让目录变深或更抽象？→ 换简单做法。
