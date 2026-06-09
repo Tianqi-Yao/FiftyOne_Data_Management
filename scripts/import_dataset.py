@@ -42,6 +42,7 @@
                              #   解析不出的仍导入，但标 tag qc:name_unparsed，
                              #   路径写到 exports/<name>_unparsed_names.txt 待补救
                              #   解析规则在仓库根 filename_patterns.yaml（不写死在代码）
+    index: true              # 默认 true：给所有结构化字段建索引（加速 App 筛选/排序）
 """
 import os
 import re
@@ -198,6 +199,17 @@ def write_report(name, suffix, paths, msg):
     return log
 
 
+def ensure_indexes(dataset, fields):
+    """给字段建索引（已存在的跳过），返回新建的字段名。加速 App 筛选/排序。"""
+    existing = set(dataset.list_indexes())
+    created = []
+    for f in fields:
+        if f not in existing:
+            dataset.create_index(f)
+            created.append(f)
+    return created
+
+
 def main(manifest_path):
     with open(manifest_path) as f:
         m = yaml.safe_load(f)
@@ -240,6 +252,10 @@ def main(manifest_path):
               if k not in ("id", "filepath", "tags", "metadata", "created_at",
                            "last_modified_at")]
     print(f"     字段: {schema}")
+
+    if m.get("index", True):                 # 给结构化字段建索引（加速 App 筛选）
+        created = ensure_indexes(dataset, schema)
+        print(f"     索引: 新建 {created or '无（已存在）'}")
     for fld in schema:
         try:
             print(f"     {fld}: {dataset.count_values(fld)}")

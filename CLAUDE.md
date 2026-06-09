@@ -52,6 +52,17 @@
   `import_dataset.py` 共用 `parse_name`（单一来源）。
 - `app_defaults.py <数据集> [字段...]` —— 设 App 默认激活/显示的字段（写 `app_config.active_fields`，
   持久化；重新 import 会重置 app_config，重跑即可恢复）。
+- `predict.py <weights.pt> <数据集> [过滤...] [slice=640]` —— 用 YOLO `.pt`（检测/分割自动判别，
+  **不用 ONNX**，`fif` 环境）把预测写进 label 字段（默认 `predictions`）。**高分辨率必加 `slice=`**
+  走**自写切片**（cv2 切片+批量推理+box-IoU 贪心 NMS 合并回原图，不 OOM）。**不用 SAHI**（其 PIL 慢、
+  格式支持少、丢 mask）。旋钮：conf/iou/overlap/slice/batch。整图模式分割大图会 OOM。
+- `export_labelme.py <数据集> [过滤...] [outdir=]` —— 把预测字段导成 X-AnyLabeling 的 LabelMe JSON
+  （分割→polygon，框→rectangle）。FiftyOne 无原生 LabelMe 导出，故自写；YOLO/COCO 用 `view.export(...)`。
+- `viewspec.py` —— `build_view(dataset, tokens)`，view token 解析（site=/view=/limit=…），predict/export/coverage 共用。
+
+**scripts/ 保持扁平**：新增脚本就在 `quickstart.md` 的脚本表加一行；**不要**用数字前缀
+（`from import_dataset import` 会语法报错）或子目录（被 import 的模块跨目录会断）。
+`quickstart.md`（根）= 速查表/索引，怎么跑看它。
 - `coverage.py <数据集> [field=value...|view=名|label=名] [links] [基址]` —— 采集覆盖热力图
   （Day×Hour，终端 ASCII + PNG + 交互 HTML），可对**任意过滤 view** 出图，列出无数据的天。
   核心 `coverage(view, label, base_url, make_links)` 可在 notebook 直接传 view。**深链默认

@@ -40,6 +40,7 @@ import fiftyone as fo
 import fiftyone.core.utils as fou
 from fiftyone import ViewField as F
 from import_dataset import REPO
+from viewspec import build_view
 
 BLOCKS = " ░▒▓█"   # 0, 低 -> 高
 
@@ -177,10 +178,9 @@ def _cli(args):
     if name not in fo.list_datasets():
         sys.exit(f"[err] 数据集不存在：{name}")
     dataset = fo.load_dataset(name)
-    view = dataset.view()
     base_url = os.environ.get("FIFTYONE_URL")
-    label = None
     make_links = False
+    view_tokens = []                       # coverage 专属 token 取走，其余交给 build_view
     for tok in args[1:]:
         if tok in ("clearviews", "--clearviews"):
             print(f"已删除 {clear_cov_views(dataset)} 个 cov_* saved view")
@@ -189,17 +189,10 @@ def _cli(args):
             make_links = True
         elif tok.startswith("http"):
             base_url = tok
-        elif tok.startswith("view="):
-            view = dataset.load_saved_view(tok[5:])
-            label = label or tok[5:]
-        elif tok.startswith("label="):
-            label = tok[6:]
         else:
-            k, v = tok.split("=", 1) if "=" in tok else ("site", tok)
-            vv = int(v) if v.lstrip("-").isdigit() else v
-            view = view.match(F(k) == vv)
-            label = label or (v if k == "site" else f"{k}-{v}")
-    coverage(view, label or "all", base_url, make_links)
+            view_tokens.append(tok)
+    view, label = build_view(dataset, view_tokens)
+    coverage(view, label, base_url, make_links)
 
 
 if __name__ == "__main__":

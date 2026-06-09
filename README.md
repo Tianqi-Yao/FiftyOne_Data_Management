@@ -4,6 +4,7 @@ Long-term **data management** for SWD (Spotted Wing Drosophila) images, built on
 **FiftyOne**. Goal: organize, search, browse, filter, manage annotations and run
 quality checks over hundreds of thousands of images. This is a research project, not
 a software product — see `CLAUDE.md` for the rules. 中文版见 `README_zh.md`.
+**Just want to run things? See `quickstart.md` (copy-paste cheat-sheet).**
 
 ## Layout
 
@@ -15,7 +16,8 @@ FiftyOne_Data_Management/
 ├── data/                        # symlinks only (gitignored)
 │   ├── hot  -> /mnt/D/SWD/01_Data               # SSD, active data
 │   └── cold -> /media/tianqi/16tb/SWD/01_Data   # 16TB HDD, cold data
-├── scripts/                     # import_dataset.py, make_sources.py, enrich_names.py, coverage.py, app_defaults.py
+├── scripts/                     # import_dataset.py, make_sources.py, enrich_names.py, coverage.py,
+│                                 #   app_defaults.py, predict.py, export_labelme.py, viewspec.py
 ├── datasets/                    # one *.yaml manifest per dataset (source of truth)
 ├── notebooks/                   # exploratory browsing / ad-hoc queries
 └── exports/                     # reports & exports (gitignored)
@@ -56,7 +58,7 @@ not by folder name.
    ```
 2. **Edit the manifest** (`datasets/*.yaml`): set real `location`, move any
    mis-grouped path, drop groups you don't want. It is fully reproducible.
-3. **Import** (one-shot: fields + metadata + drop corrupt + parse filenames):
+3. **Import** (one-shot: fields + metadata + drop corrupt + parse filenames + index fields):
    ```bash
    conda run -n fif python scripts/import_dataset.py datasets/swd_2024_eachfarm_16mp.yaml
    ```
@@ -101,6 +103,34 @@ slider). Clean them up anytime with `clearviews`.
 conda run -n fif python scripts/coverage.py swd_2025_eachfarm_16mp_north site=air1 links https://fiftyone.tianqiyao.men
 conda run -n fif python scripts/coverage.py swd_2025_eachfarm_16mp_north clearviews   # delete all cov_* views
 ```
+
+### Predict with a trained model + export to X-AnyLabeling
+
+Run a trained YOLO `.pt` (detection or instance-seg — auto-detected, **no ONNX needed**)
+on a view; predictions are stored as a FiftyOne label field (overlaid on images in the
+App, editable). Then export to LabelMe JSON for X-AnyLabeling / reuse.
+
+```bash
+# 1) sliced inference (recommended for high-res: cv2-slice into tiles, batched YOLO predict,
+#    NMS-merge back to full-image coords; finds small objects & no OOM). Self-written, no SAHI.
+conda run -n fif python scripts/predict.py /path/to/best.pt swd_2024_eachfarm_16mp site=air1 limit=50 slice=640 overlap=0.2
+#    (drop slice= for plain whole-image inference; conf/iou/label_field/device/batch optional)
+#    review overlaid predictions:  conda run -n fif fiftyone app launch
+# 2) export predictions as LabelMe JSON (X-AnyLabeling opens these)
+conda run -n fif python scripts/export_labelme.py swd_2024_eachfarm_16mp site=air1 limit=50 outdir=exports/labelme_air1
+```
+
+- Annotations live in the FiftyOne dataset (label field, default `predictions`); the `.json`
+  files are an export for external tools. Seg → `shape_type:polygon`, box → `rectangle`.
+- **`slice=<N>`** turns on **self-written tiling** (cv2 slice + `tile_positions` snap-back +
+  batched `model.predict` + per-class **box-IoU greedy NMS**; seg masks rasterized to bbox).
+  No SAHI dependency — works with any model `YOLO()` loads (`.pt/.onnx/.engine`). High-res
+  16MP/64MP → always use `slice=` (better recall on small bugs, no mask-upscale OOM).
+- Tuning knobs: `conf=` (recall), `iou=` (NMS dedup), `overlap=`, `slice=` (≈ model imgsz;
+  64MP can go 1280/2560), `batch=`. Validate counts against your own GT.
+- No `outdir` ⇒ writes `<img>.json` **beside each image** (X-AnyLabeling auto-loads it).
+- Whole-image mode (no `slice=`) on high-res + instance-seg can OOM (mask upscaled to full
+  size); use `slice=`, a detection model, or `device=cpu`. (FiftyOne skips failed images.)
 
 ### Manifest shape (mapping mode)
 

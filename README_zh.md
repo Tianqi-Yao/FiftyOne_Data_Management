@@ -3,6 +3,7 @@
 基于 **FiftyOne** 的 SWD（Spotted Wing Drosophila）图片**长期数据管理**项目。目标：对
 几十万张图片做整理、检索、浏览、筛选、标注管理与数据质量检查。这是研究项目，不是软件
 产品——规则见 `CLAUDE_zh.md`。English: `README.md`。
+**只想跑命令？看 `quickstart.md`（可直接复制的速查表）。**
 
 ## 目录结构
 
@@ -14,7 +15,8 @@ FiftyOne_Data_Management/
 ├── data/                        # 只放软链接（gitignored）
 │   ├── hot  -> /mnt/D/SWD/01_Data               # SSD，热数据
 │   └── cold -> /media/tianqi/16tb/SWD/01_Data   # 16TB HDD，冷数据
-├── scripts/                     # import_dataset.py, make_sources.py, enrich_names.py, coverage.py, app_defaults.py
+├── scripts/                     # import_dataset.py, make_sources.py, enrich_names.py, coverage.py,
+│                                 #   app_defaults.py, predict.py, export_labelme.py, viewspec.py
 ├── datasets/                    # 每个数据集一个 *.yaml 清单（真相源）
 ├── notebooks/                   # 探索性浏览 / 临时查询
 └── exports/                     # 报告与导出（gitignored）
@@ -52,7 +54,7 @@ conda run -n fif python scripts/<...>.py    # 跑脚本
    ```
 2. **人工编辑清单**（`datasets/*.yaml`）：填真实 `location`、把放错的目录挪组、删掉不
    要的组。完全可复现。
-3. **导入**（一次跑完：字段 + metadata + 剔损坏 + 解析文件名）：
+3. **导入**（一次跑完：字段 + metadata + 剔损坏 + 解析文件名 + 给字段建索引）：
    ```bash
    conda run -n fif python scripts/import_dataset.py datasets/swd_2024_eachfarm_16mp.yaml
    ```
@@ -96,9 +98,29 @@ conda run -n fif python scripts/coverage.py swd_2025_eachfarm_16mp_north site=ai
 conda run -n fif python scripts/coverage.py swd_2025_eachfarm_16mp_north clearviews   # 删所有 cov_* 视图
 ```
 
+### 用训练好的模型打标注 + 导出 X-AnyLabeling
+
+用训练好的 YOLO `.pt`（检测或实例分割，自动判别，**不用转 ONNX**）在一个 view 上跑，预测
+存成 FiftyOne 的 label 字段（App 里叠加在图上、可改），再导出 LabelMe JSON 供 X-AnyLabeling 用。
+
 ```bash
-conda run -n fif python scripts/coverage.py swd_2025_eachfarm_16mp_north air1 https://fiftyone.tianqiyao.men
+# 1) 切片推理（高分辨率推荐：cv2 切片→YOLO 批量推理→NMS 合并回原图坐标，找小目标更准、不 OOM）。自写，不用 SAHI。
+conda run -n fif python scripts/predict.py /path/to/best.pt swd_2024_eachfarm_16mp site=air1 limit=50 slice=640 overlap=0.2
+#    （去掉 slice= 就是整图推理；conf/iou/label_field/device/batch 可选）
+#    复核叠加的预测：conda run -n fif fiftyone app launch
+# 2) 导出成 LabelMe JSON（X-AnyLabeling 直接打开）
+conda run -n fif python scripts/export_labelme.py swd_2024_eachfarm_16mp site=air1 limit=50 outdir=exports/labelme_air1
 ```
+
+- 标注存在 FiftyOne 数据集（label 字段，默认 `predictions`）；`.json` 是给外部工具的导出。
+  分割→`shape_type:polygon`，框→`rectangle`。
+- **`slice=<N>`** 开启**自写切片**（cv2 切 + `tile_positions` snap-back + `model.predict` 批量 +
+  按类 **box-IoU 贪心 NMS**；分割 mask 栅格化到 bbox）。**不依赖 SAHI**，支持 `YOLO()` 能加载的任何
+  格式（`.pt/.onnx/.engine`）。16MP/64MP **务必用 `slice=`**（小目标召回更好、不会 mask 放大 OOM）。
+- 调参旋钮：`conf=`（召回）、`iou=`（NMS 去重）、`overlap=`、`slice=`（≈模型 imgsz；64MP 可调 1280/2560）、
+  `batch=`。数量好坏请用你自己的 GT 验证。
+- 不给 `outdir` ⇒ 写在**图片旁** `<img>.json`，X-AnyLabeling 打开图片目录自动加载。
+- 整图模式（不加 `slice=`）在高分辨率 + 实例分割时可能 OOM → 用 `slice=`、检测模型或 `device=cpu`。
 
 ### 清单写法（mapping 模式）
 
