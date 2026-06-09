@@ -1,0 +1,15 @@
+# 文件名解析规则（唯一来源）。import_dataset.py / enrich_names.py 都读这里。
+# 每条是带命名组的正则，从上到下第一条匹配出 hh/mm 的胜出。
+# 命名组：year(可选，缺了就用清单里的 year)、mon、day、hh、mm、focal(可选)。
+#         多余部分（如秒）忽略即可。
+# 不符合任何一条的图片 -> 仍导入，但标 tag qc:name_unparsed，
+#         路径写到 exports/<dataset>_unparsed_names.txt 待补救。
+# 加新格式：在下面再加一行正则即可，不用改代码。
+
+patterns:
+  # 1) MMDD_HHMM_focal      例 0701_1230_624.jpg  (7月1日 12:30, 焦距624; 年份用清单 year)
+  - '^(?P<mon>\d{2})(?P<day>\d{2})_(?P<hh>\d{2})(?P<mm>\d{2})(?:_(?P<focal>\d+))?'
+
+  # 2) WxH_YYYY-MM-DD_HH-MM-SS_focusNNN
+  #    例 4656x3496_2025-04-26_19-26-40_focus525.jpg  (2025-04-26 19:26, 秒丢弃, 焦距525)
+  - '(?P<year>\d{4})-(?P<mon>\d{2})-(?P<day>\d{2})_(?P<hh>\d{2})-(?P<mm>\d{2})-\d{2}_focus(?P<focal>\d+)'

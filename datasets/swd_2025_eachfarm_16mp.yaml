@@ -1,18 +1,18 @@
 # 自动生成的草稿，请人工审阅：改 name、补 defaults、改 location 真实地名、挪放错的目录。
 # 跑: python scripts/import_dataset.py <本文件>
-name: swd_2025_eachfarm_16mp_north   # TODO 按约定改名，如 swd_<year>_<场>_<device>
+name: swd_2025_eachfarm_16mp_north   
 defaults: { year: 2025, device: 16MP, status: cold }   # 所有组共享的字段
 compute_metadata: true
 parse_filename: true   # 从文件名解析 date / time / focal_length 三个字段
 sources:
   # ---- 0_New Folder / unknown: 32502 张 ----
-  - set: { site: 0_New Folder, location: Unknown data, focus: fixed }   # TODO location
+  - set: { site: 0_New Folder, location: Unknown data, focus: fixed }   
     require_resolution: "4656x3496"
     paths:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/0_New Folder/R_yellow_0915-1113/output/ManualFocus"   # 19448 张
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/0_New Folder/jeffR_0915-1113/output/ManualFocus"   # 13054 张
   # ---- air1 / unknown: 58135 张 ----
-  - set: { site: air1, location: Airport COMO Elderberry Farm, focus: fixed }   # TODO location
+  - set: { site: air1, location: Airport COMO Elderberry Farm, focus: fixed }   
     require_resolution: "4656x3496"
     paths:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/air1/air1_0427-0611/output/ManualFocus_air1_0427-0611"   # 11308 张
@@ -21,7 +21,7 @@ sources:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/air1/air1_0921-1105/output/ManualFocus_air1_0921-1105"   # 13063 张
 
   # ---- air2 / unknown: 39498 张 ----
-  - set: { site: air2, location: Airport COMO Elderberry Farm, focus: fixed }   # TODO location
+  - set: { site: air2, location: Airport COMO Elderberry Farm, focus: fixed }  
     require_resolution: "4656x3496"
     paths:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/air2/air2_0427-0611/output/ManualFocus_air2_0427-0611"   # 11312 张
@@ -29,7 +29,7 @@ sources:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/air2/air2_0727-0731/output/ManualFocus_air2_0727-0731"   # 14687 张
 
   # ---- jeff / unknown: 70226 张 ----
-  - set: { site: jeff, location: Jefferson city Carver Farm, focus: fixed }   # TODO location
+  - set: { site: jeff, location: Jefferson city Carver Farm, focus: fixed }   
     require_resolution: "4656x3496"
     paths:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/jeff/jeff_0425-0611/output/ManualFocus_jeff_0425-0611"   # 23994 张
@@ -37,20 +37,20 @@ sources:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/jeff/jeff_0717-0915/output/ManualFocus_jeff_0717-0915"   # 24664 张
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/jeff/jeff_0921-1108/output/ManualFocus_jeff_0921-1108"   # 14772 张
   # ---- lloyd1 / unknown: 45218 张 ----
-  - set: { site: lloyd1, location: Lloyd Farm, focus: fixed }   # TODO location
+  - set: { site: lloyd1, location: Lloyd Farm, focus: fixed }   
     require_resolution: "4656x3496"
     paths:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/lloyd1/lloyd1_0425-0619/output/ManualFocus_lloyd1_0425-0619"   # 2143 张
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/lloyd1/lloyd1_0619-0727/output/ManualFocus_lloyd1_0619-0727"   # 17209 张
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/lloyd1/lloyd1_0728-0925/output/ManualFocus_lloyd1_0728-0925"   # 25866 张
   # ---- lloyd2 / unknown: 18859 张 ----
-  - set: { site: lloyd2, location: Lloyd Farm, focus: fixed }   # TODO location
+  - set: { site: lloyd2, location: Lloyd Farm, focus: fixed }  
     require_resolution: "4656x3496"
     paths:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/lloyd2/lloyd2_0425-0507/output/ManualFocus_lloyd2_0425-0507"   # 3282 张
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/lloyd2/lloyd2_0425-0628/output/ManualFocus_lloyd2_0425-0628"   # 15577 张
   # ---- southfarm1 / unknown: 37887 张 ----
-  - set: { site: southfarm1, location: Mizzou South Farm, focus: fixed }   # TODO location
+  - set: { site: southfarm1, location: Mizzou South Farm, focus: fixed }  
     require_resolution: "4656x3496"
     paths:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/southfarm1/southfarm1_0426-0608/output/ManualFocus_southfarm1_0426-0608"   # 12717 张
@@ -58,7 +58,7 @@ sources:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/southfarm1/southfarm1_0728-0921/output/ManualFocus_southfarm1_0728-0921"   # 2476 张
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/southfarm1/southfarm1_0921-1110/output/ManualFocus_southfarm1_0921-1110"   # 12015 张
   # ---- southfarm2 / unknown: 39600 张 ----
-  - set: { site: southfarm2, location: Mizzou South Farm, focus: fixed }   # TODO location
+  - set: { site: southfarm2, location: Mizzou South Farm, focus: fixed } 
     require_resolution: "4656x3496"
     paths:
       - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/01_North/southfarm2/southfarm2_0426-0611/output/ManualFocus_southfarm2_0426-0611"   # 11385 张

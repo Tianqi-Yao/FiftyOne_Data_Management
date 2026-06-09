@@ -32,10 +32,13 @@
 ## 数据模型
 
 - 结构化属性存成**字段**（App 自动出好用的 UI）：`site`、`location`、`focus`、`year`、
-  `device`、`status`、`date`(DateField)、`capture_tod`(DateTimeField，一天内时段，
-  占位日期 2000-01-01)、`focal_length`(IntField)、`time`(字符串)。
+  `device`、`status`、`date`(DateField)、`time`(DateTimeField，一天内时段=可拖 HH:MM，
+  占位日期 2000-01-01)、`focal_length`(IntField)。
 - **`tags` 只用于工作流 / 质检**（如 `qc:name_unparsed`，以后 reviewed/good/discard）。
 - `datasets/*.yaml` 是**真相源**（可复现、可手改）。数据库可删可重建，重跑导入即可。
+- **文件名解析规则放在仓库根 `filename_patterns.yaml`（唯一来源，不写死在代码）。**
+  一组带命名组 year/mon/day/hh/mm/focal 的正则。新格式 → 往该文件加一行正则，不改代码。
+  解析不出的图标 `qc:name_unparsed`，不静默丢弃。
 - 数据集命名：`swd_<year>_<scope>_<device>`，如 `swd_2024_eachfarm_16mp`。
 
 ## 脚本（保持这套；扩展，不要增殖）
@@ -45,8 +48,15 @@
 - `make_sources.py <根> <WxH> <out.yaml>` —— 扫描目录，生成可编辑的 `sources:` 映射
   草稿（按 site/focus 分组，逐目录列出供手改）。
 - `enrich_names.py <数据集|清单>` —— 可重复跑、**不读图片**：(重新)解析文件名 →
-  `date/time/capture_tod/focal_length`。导入过后只想重算文件名派生字段时用。与
+  `date/time/focal_length`。导入过后只想重算文件名派生字段时用。与
   `import_dataset.py` 共用 `parse_name`（单一来源）。
+- `app_defaults.py <数据集> [字段...]` —— 设 App 默认激活/显示的字段（写 `app_config.active_fields`，
+  持久化；重新 import 会重置 app_config，重跑即可恢复）。
+- `coverage.py <数据集> [field=value...|view=名|label=名] [links] [基址]` —— 采集覆盖热力图
+  （Day×Hour，终端 ASCII + PNG + 交互 HTML），可对**任意过滤 view** 出图，列出无数据的天。
+  核心 `coverage(view, label, base_url, make_links)` 可在 notebook 直接传 view。**深链默认
+  关闭**；仅加 `links`（+基址）才按天建 `cov_<label>_<日期>` saved view（OSS 只能靠 saved
+  view 深链）。`clearviews` 一键删所有 `cov_*` 视图。**不要默认建一堆 saved view 污染列表。**
 
 ## 异常：浮出来，绝不静默丢弃
 

@@ -11,6 +11,10 @@
 把每个含目标分辨率图片的目录，按 (site, focus) 归好类，paths 列出具体目录、
 数量写在注释里。**生成后请人工审阅**：改 location 真实地名、把放错的目录挪到
 对的组、删掉不要的组。结果完全由这张表决定（可复现）。
+
+性能：分辨率优先从**路径**解析（秒级）；路径里没有时，**每个目录只采样 1 张**读像素
+（同目录同机同设置，分辨率必一致），避免逐张开大图。靠像素定分辨率的组不写
+require_resolution（否则导入会逐张重读，慢且无意义——目录已假定纯净）。
 """
 import os
 import re
@@ -22,14 +26,15 @@ RES_RE = re.compile(r"(\d{3,4})x(\d{3,4})")
 EXCLUDE = {"sensor"}
 
 
-def resolution(path):
-    m = RES_RE.search(path)
+def dir_resolution(dp, sample_name):
+    """返回 (分辨率, by_path)。路径带 WxH 直接用；否则只读该目录的 1 张样本。"""
+    m = RES_RE.search(dp)
     if m:
-        return f"{m.group(1)}x{m.group(2)}"
+        return f"{m.group(1)}x{m.group(2)}", True
     try:
-        return "x".join(map(str, Image.open(path).size))
+        return "x".join(map(str, Image.open(os.path.join(dp, sample_name)).size)), False
     except Exception:
-        return None
+        return None, False
 
 
 def focus_mode(path):
@@ -49,17 +54,21 @@ def site_of(path, root):
 
 
 def main(root, target, out=None):
-    # groups[(site, focus)] = {dir: count}
-    groups = collections.defaultdict(lambda: collections.Counter())
+    # groups[(site, focus)] = {dir: count}；by_pixel 记录哪些组的分辨率是采样像素定的
+    groups = collections.defaultdict(collections.Counter)
+    by_pixel = set()
     for dp, dns, fns in os.walk(root):
         dns[:] = [d for d in dns if d not in EXCLUDE]
-        for f in fns:
-            if not f.lower().endswith(".jpg"):
-                continue
-            full = os.path.join(dp, f)
-            if resolution(full) != target:
-                continue
-            groups[(site_of(full, root), focus_mode(full))][dp] += 1
+        jpgs = [f for f in fns if f.lower().endswith(".jpg")]
+        if not jpgs:
+            continue
+        res, by_path = dir_resolution(dp, jpgs[0])   # 每目录只采样 1 张
+        if res != target:
+            continue
+        key = (site_of(dp, root), focus_mode(dp))
+        groups[key][dp] = len(jpgs)
+        if not by_path:
+            by_pixel.add(key)
 
     name = f"swd_{os.path.basename(root.rstrip('/')).lower()}"
     lines = [
@@ -70,12 +79,16 @@ def main(root, target, out=None):
         f"compute_metadata: true",
         f"sources:",
     ]
-    for (site, focus) in sorted(groups):
-        dirs = groups[(site, focus)]
+    for key in sorted(groups):
+        site, focus = key
+        dirs = groups[key]
         total = sum(dirs.values())
         lines.append(f"  # ---- {site} / {focus}: {total} 张 ----")
         lines.append(f"  - set: {{ site: {site}, location: {site}, focus: {focus} }}   # TODO location")
-        lines.append(f"    require_resolution: \"{target}\"")
+        if key in by_pixel:
+            lines.append(f"    # 分辨率({target})由像素采样确定，目录假定纯净，未加 require_resolution")
+        else:
+            lines.append(f"    require_resolution: \"{target}\"")
         lines.append(f"    paths:")
         for d in sorted(dirs):
             lines.append(f"      - \"{d}\"   # {dirs[d]} 张")

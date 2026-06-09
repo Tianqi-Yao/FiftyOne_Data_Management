@@ -41,6 +41,7 @@
     parse_filename: true     # 从文件名解析 date(DateField)/time/focal_length(IntField)
                              #   解析不出的仍导入，但标 tag qc:name_unparsed，
                              #   路径写到 exports/<name>_unparsed_names.txt 待补救
+                             #   解析规则在仓库根 filename_patterns.yaml（不写死在代码）
 """
 import os
 import re
@@ -95,49 +96,42 @@ def resolution(path):
         return None
 
 
-# 文件名格式（SWD，历史迭代出多种）：
-#   标准 fixed/auto : MMDD_HHMM_<focal>           0826_1205_672.jpg
-#   unknown         : MMDD_HHMM                   0507_1903.jpg   （无焦距）
-#   captures/sweep  : ..._YYYY-MM-DD HH_MM_SS_... 焦距在文件夹 focus_<NNN>
-#   image_ 格式     : image_YYYYMMDD_HHMMSS       image_20240507_190507.jpg
-_STD_RE = re.compile(r"^(\d{2})(\d{2})_(\d{2})(\d{2})(?:_(\d+))?")
-_CAP_RE = re.compile(r"(\d{4})-(\d{2})-(\d{2}) (\d{2})_(\d{2})_(\d{2})")
-_IMG_RE = re.compile(r"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})")
+# 文件名解析规则放在仓库根的 filename_patterns.yaml（唯一来源，不写死在代码里）。
+PATTERNS_FILE = os.path.join(REPO, "filename_patterns.yaml")
 
 
-def parse_name(path, year):
-    """从文件名解析 date / time / focal_length（解析不到的就不加）。"""
+def load_patterns():
+    """读 filename_patterns.yaml 里的正则列表（命名组 year/mon/day/hh/mm/focal）。"""
+    with open(PATTERNS_FILE) as f:
+        return yaml.safe_load(f)["patterns"]
+
+
+def parse_name(path, year, patterns):
+    """从文件名解析 date(DateField) / time(DateTimeField 可拖) / focal_length（解析不到的不加）。
+
+    patterns: 来自 load_patterns() 的正则列表。从上到下，第一条匹配出 hh/mm 的胜出。
+    """
     stem = os.path.splitext(os.path.basename(path))[0]
     out = {}
-    m = _STD_RE.match(stem)
-    if m:
-        mm, dd, hh, mi, foc = m.groups()
-        if year:
+    for pat in patterns:
+        mo = re.search(pat, stem)
+        if not mo:
+            continue
+        g = mo.groupdict()
+        if not (g.get("hh") and g.get("mm")):
+            continue
+        y = g.get("year") or year
+        if y and g.get("mon") and g.get("day"):
             try:
-                out["date"] = _date(int(year), int(mm), int(dd))
+                out["date"] = _date(int(y), int(g["mon"]), int(g["day"]))
             except ValueError:
                 pass
-        out["time"] = f"{hh}:{mi}"
-        # 固定假日期 + 真实时分：App 里带 HH:MM 的可拖时段滑块
-        out["capture_tod"] = _datetime(2000, 1, 1, int(hh), int(mi))
-        if foc:
-            out["focal_length"] = int(foc)
-    else:
-        # captures 的 "YYYY-MM-DD HH_MM_SS" 或 image_ 的 "YYYYMMDD_HHMMSS"
-        m2 = _CAP_RE.search(stem) or _IMG_RE.search(stem)
-        if m2:
-            y, mo, dd, hh, mi, _ = m2.groups()
-            try:
-                out["date"] = _date(int(y), int(mo), int(dd))
-            except ValueError:
-                pass
-            out["time"] = f"{hh}:{mi}"
-            out["capture_tod"] = _datetime(2000, 1, 1, int(hh), int(mi))
-    # 文件名没给焦距时，回退到 captures 文件夹的 focus_<NNN>
-    if "focal_length" not in out:
-        mf = re.search(r"focus_(\d+)", path)
-        if mf:
-            out["focal_length"] = int(mf.group(1))
+        # time 存成 DateTimeField（固定假日期 2000-01-01 + 真实时分）：
+        # App 里就是带 HH:MM 的可拖时段滑块
+        out["time"] = _datetime(2000, 1, 1, int(g["hh"]), int(g["mm"]))
+        if g.get("focal"):
+            out["focal_length"] = int(g["focal"])
+        break
     return out
 
 
@@ -179,8 +173,9 @@ def build_plan(m):
 
     # 从文件名解析 date / time / focal_length；解析不出的打 qc:name_unparsed
     if m.get("parse_filename"):
+        patterns = load_patterns()        # 规则来自 filename_patterns.yaml
         for p, attrs in plan.items():
-            info = parse_name(p, attrs.get("year"))
+            info = parse_name(p, attrs.get("year"), patterns)
             attrs.update(info)
             if "time" not in info:        # 没拿到日期时间 = 命名异常
                 attrs["_tags"].append("qc:name_unparsed")

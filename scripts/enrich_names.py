@@ -18,7 +18,7 @@ import yaml
 import fiftyone as fo
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from import_dataset import parse_name, write_report, REPO  # 复用，单一来源
+from import_dataset import parse_name, write_report, REPO, load_patterns  # 复用
 
 
 def resolve_name(arg):
@@ -33,29 +33,25 @@ def main(arg):
     if name not in fo.list_datasets():
         sys.exit(f"[err] 数据集不存在：{name}")
     dataset = fo.load_dataset(name)
+    patterns = load_patterns()           # 规则来自 filename_patterns.yaml
 
     ids = dataset.values("id")
     paths = dataset.values("filepath")
     years = dataset.values("year") if "year" in dataset.get_field_schema() \
         else [None] * len(ids)
 
-    dates, times, tods, focals, unparsed_ids = [], [], [], [], []
+    dates, times, focals, unparsed_ids = [], [], [], []
     for _id, p, y in zip(ids, paths, years):
-        info = parse_name(p, y)
+        info = parse_name(p, y, patterns)
         dates.append(info.get("date"))
         times.append(info.get("time"))
-        tods.append(info.get("capture_tod"))
         focals.append(info.get("focal_length"))
         if "time" not in info:
             unparsed_ids.append(_id)
 
     dataset.set_values("date", dates)            # -> DateField
-    dataset.set_values("time", times)            # -> StringField（可读）
-    dataset.set_values("capture_tod", tods)      # -> DateTimeField（可拖时段，显示 HH:MM）
+    dataset.set_values("time", times)            # -> DateTimeField（可拖时段，HH:MM）
     dataset.set_values("focal_length", focals)   # -> IntField
-
-    if "time_min" in dataset.get_field_schema():  # 清掉旧的分钟数字段
-        dataset.delete_sample_field("time_min")
 
     # 先清旧标记，保证可重复跑（已能解析的不该再背着旧 tag）
     stale = dataset.match_tags("qc:name_unparsed")

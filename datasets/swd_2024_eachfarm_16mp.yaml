@@ -50,7 +50,7 @@ sources:
       - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/jeff/Desktop_jeff_0828_0707/images/4656x3496_fixedfocus"   # 2366 张
       - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/jeff/Desktop_jeff_1011_0829_none/images/4656x3496_fixedfocus"   # 6369 张
   # ---- lloyd / auto: 4190 张 ----
-  - set: { site: lloyd, location: Lloyd Farm, focus: auto }   # TODO location
+  - set: { site: lloyd1, location: Lloyd Farm, focus: auto }   # TODO location
     require_resolution: "4656x3496"
     paths:
       - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0521_0513_none/images/4656x3496_autofocus"   # 1270 张
@@ -61,7 +61,7 @@ sources:
       - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0830_0805/images/4656x3496_autofocus"   # 382 张
       - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0909_0829/images/4656x3496_autofocus"   # 197 张
   # ---- lloyd / fixed: 8001 张 ----
-  - set: { site: lloyd, location: Lloyd Farm, focus: fixed }   # TODO location
+  - set: { site: lloyd1, location: Lloyd Farm, focus: fixed }   # TODO location
     require_resolution: "4656x3496"
     paths:
       - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0521_0513_none/images/4656x3496_fixedfocus"   # 751 张

@@ -1,0 +1,127 @@
+# 自动生成的草稿，请人工审阅：改 name、补 defaults、改 location 真实地名、挪放错的目录。
+# 跑: python scripts/import_dataset.py <本文件>
+name: swd_2025_eachfarm_64mp_south   # TODO 按约定改名，如 swd_<year>_<场>_<device>
+defaults: { year: 2025, device: 16MP, status: cold }   # 所有组共享的字段
+compute_metadata: true
+parse_filename: true   # 从文件名解析 date / time / focal_length 三个字段
+sources:
+  # ---- ElderFarm1 / auto: 14166 张 ----
+  - set: { site: ElderFarm1, location: Elder Farm, focus: auto }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm1/ElderFarm1_0604-0625/images/autofocus_rpicam_still"   # 2548 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm1/ElderFarm1_0625-0723/images/autofocus_rpicam_still"   # 3346 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm1/ElderFarm1_0723-0820/images/autofocus_rpicam_still"   # 3419 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm1/ElderFarm1_0820-0920/images/autofocus_rpicam_still"   # 3431 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm1/ElderFarm1_1013-1024/images/autofocus_rpicam_still"   # 1422 张
+  # ---- ElderFarm1 / unknown: 14032 张 ----
+  - set: { site: ElderFarm1, location: Elder Farm, focus: fixed }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm1/ElderFarm1_0604-0625/images/manualfocus_rpicam_still"   # 2555 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm1/ElderFarm1_0625-0723/images/manualfocus_rpicam_still"   # 3284 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm1/ElderFarm1_0723-0820/images/manualfocus_rpicam_still"   # 3369 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm1/ElderFarm1_0820-0920/images/manualfocus_rpicam_still"   # 3417 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm1/ElderFarm1_1013-1024/images/manualfocus_rpicam_still"   # 1407 张
+  # ---- ElderFarm2 / auto: 8325 张 ----
+  - set: { site: ElderFarm2, location: Elder Farm, focus: auto }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm2/ElderFarm2_0625-0723/images/autofocus_rpicam_still"   # 1421 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm2/ElderFarm2_0723-0808/images/autofocus_rpicam_still"   # 3288 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm2/ElderFarm2_0820-0911/images/autofocus_rpicam_still"   # 3262 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm2/ElderFarm2_1013-1017/images/autofocus_rpicam_still"   # 354 张
+  # ---- ElderFarm2 / unknown: 8398 张 ----
+  - set: { site: ElderFarm2, location: Elder Farm, focus: fixed }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm2/ElderFarm2_0625-0723/images/manualfocus_rpicam_still"   # 1552 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm2/ElderFarm2_0723-0808/images/manualfocus_rpicam_still"   # 3284 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm2/ElderFarm2_0820-0911/images/manualfocus_rpicam_still"   # 3222 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/ElderFarm2/ElderFarm2_1013-1017/images/manualfocus_rpicam_still"   # 340 张
+  # ---- HSH / auto: 14342 张 ----
+  - set: { site: HSH1, location: HSH Farm, focus: auto }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/HSH/HSH_0604_0625/images/autofocus_rpicam_still"   # 2511 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/HSH/HSH_0625-0723/images/autofocus_rpicam_still"   # 3285 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/HSH/HSH_0723-0819/images/autofocus_rpicam_still"   # 2610 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/HSH/HSH_0820-1012/images/autofocus_rpicam_still"   # 3835 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/HSH/HSH_1013-1106/images/autofocus_rpicam_still"   # 2101 张
+  # ---- HSH / unknown: 14289 张 ----
+  - set: { site: HSH1, location: HSH Farm, focus: fixed }  
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/HSH/HSH_0604_0625/images/manualfocus_rpicam_still"   # 2520 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/HSH/HSH_0625-0723/images/manualfocus_rpicam_still"   # 3264 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/HSH/HSH_0723-0819/images/manualfocus_rpicam_still"   # 2610 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/HSH/HSH_0820-1012/images/manualfocus_rpicam_still"   # 3807 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/HSH/HSH_1013-1106/images/manualfocus_rpicam_still"   # 2088 张
+  # ---- MGrove1 / auto: 11077 张 ----
+  - set: { site: ms1, location: MSU Mountain Grove, focus: auto }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove1/MGrove1_0604_0625/images/autofocus_rpicam_still"   # 2544 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove1/MGrove1_0625-0720/images/autofocus_rpicam_still"   # 2948 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove1/MGrove1_0723-0820/images/autofocus_rpicam_still"   # 3096 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove1/MGrove1_1013-1106/images/autofocus_rpicam_still"   # 2489 张
+  # ---- MGrove1 / unknown: 11010 张 ----
+  - set: { site: ms1, location: MSU Mountain Grove, focus: fixed }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove1/MGrove1_0604_0625/images/manualfocus_rpicam_still"   # 2540 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove1/MGrove1_0625-0720/images/manualfocus_rpicam_still"   # 2902 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove1/MGrove1_0723-0820/images/manualfocus_rpicam_still"   # 3093 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove1/MGrove1_1013-1106/images/manualfocus_rpicam_still"   # 2475 张
+  # ---- MGrove2 / auto: 15176 张 ----
+  - set: { site: ms2, location: MSU Mountain Grove, focus: auto }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove2/MGrove2_0604_0625/images/autofocus_rpicam_still"   # 2527 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove2/MGrove2_0625-0723/images/autofocus_rpicam_still"   # 3192 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove2/MGrove2_0723-0820/images/autofocus_rpicam_still"   # 3350 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove2/MGrove2_0820-0918/images/autofocus_rpicam_still"   # 3398 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove2/MGrove2_1013-1106/images/autofocus_rpicam_still"   # 2709 张
+  # ---- MGrove2 / unknown: 15164 张 ----
+  - set: { site: ms2, location: MSU Mountain Grove, focus: fixed }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove2/MGrove2_0604_0625/images/manualfocus_rpicam_still"   # 2532 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove2/MGrove2_0625-0723/images/manualfocus_rpicam_still"   # 3196 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove2/MGrove2_0723-0820/images/manualfocus_rpicam_still"   # 3357 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove2/MGrove2_0820-0918/images/manualfocus_rpicam_still"   # 3415 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/MGrove2/MGrove2_1013-1106/images/manualfocus_rpicam_still"   # 2664 张
+  # ---- SWREEC1 / auto: 13785 张 ----
+  - set: { site: sw1, location: Mizzou SW-REEC, focus: auto }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC1/SWREEC1_0604_0625/images/autofocus_rpicam_still"   # 2569 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC1/SWREEC1_0626-0723/images/autofocus_rpicam_still"   # 3134 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC1/SWREEC1_0723-0820/images/autofocus_rpicam_still"   # 3325 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC1/SWREEC1_0820-0919/images/autofocus_rpicam_still"   # 3406 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC1/SWREEC1_1013-1025/images/autofocus_rpicam_still"   # 1351 张
+  # ---- SWREEC1 / unknown: 13824 张 ----
+  - set: { site: sw1, location: Mizzou SW-REEC, focus: fixed }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC1/SWREEC1_0604_0625/images/manualfocus_rpicam_still"   # 2573 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC1/SWREEC1_0626-0723/images/manualfocus_rpicam_still"   # 3140 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC1/SWREEC1_0723-0820/images/manualfocus_rpicam_still"   # 3350 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC1/SWREEC1_0820-0919/images/manualfocus_rpicam_still"   # 3420 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC1/SWREEC1_1013-1025/images/manualfocus_rpicam_still"   # 1341 张
+  # ---- SWREEC2 / auto: 12788 张 ----
+  - set: { site: sw2, location: Mizzou SW-REEC, focus: auto }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC2/SWREEC2_0604_0625/images/autofocus_rpicam_still"   # 2548 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC2/SWREEC2_0626-0723/images/autofocus_rpicam_still"   # 3252 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC2/SWREEC2_0723-0816/images/autofocus_rpicam_still"   # 3501 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC2/SWREEC2_0820-0918/images/autofocus_rpicam_still"   # 3487 张
+  # ---- SWREEC2 / unknown: 12274 张 ----
+  - set: { site: sw2, location: Mizzou SW-REEC, focus: fixed }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC2/SWREEC2_0604_0625/images/manualfocus_rpicam_still"   # 2562 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC2/SWREEC2_0626-0723/images/manualfocus_rpicam_still"   # 3124 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC2/SWREEC2_0723-0816/images/manualfocus_rpicam_still"   # 3141 张
+      - "/media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South/SWREEC2/SWREEC2_0820-0918/images/manualfocus_rpicam_still"   # 3447 张
