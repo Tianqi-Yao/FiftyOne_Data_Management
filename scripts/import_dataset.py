@@ -2,44 +2,180 @@
 """按 datasets/<name>.yaml 清单创建/更新一个 FiftyOne 数据集。
 
 用法:
-    python scripts/import_dataset.py datasets/swd_2026_elderfarm_64mp.yaml
+    python scripts/import_dataset.py datasets/swd_2024_eachfarm_16mp.yaml
 
-清单是真相源 —— FiftyOne 数据库可删可重建，重跑本脚本即可。
-图片原地引用（不复制），FiftyOne 只存 filepath + metadata。
+清单是真相源 —— FiftyOne 数据库可删可重建，重跑本脚本即可。结果完全由
+清单决定（可复现）。图片原地引用（不复制），FiftyOne 只存 filepath + 字段。
+
+结构化属性存成**字段**（StringField/IntField...），这样在 App 侧边栏会自动
+变成下拉多选 / 数值滑块 / 时间选择器。tags 留给工作流标记。
+
+推荐写法：mapping 模式（可手动编辑、分组批量赋值）
+---------------------------------------------------------
+    defaults: { year: 2024, device: 16MP, status: cold }   # 所有组共享的字段
+    sources:                                               # 映射表，逐条手改
+      - set: { site: air1, location: Airport, focus: fixed }
+        require_resolution: "4656x3496"   # 可选：按实际像素过滤
+        tags: [ ]                          # 可选：这组要打的 tag
+        paths:                             # 目录或 glob，可递归
+          - "/.../air1/.../4656x3496_fixedfocus"
+      - set: { site: air1, location: Airport, focus: auto }
+        paths: [ "/.../air1/.../4656x3496_autofocus" ]
+
+每条 source 的 set 字段 = defaults + 本组覆盖，赋给本组所有图。
+跨 source 命中同一文件时，靠后的 source 覆盖（并会提示数量）。
+
+简易模式（结构规整时）
+---------------------------------------------------------
+    root: /.../eachFarm          # 递归遍历（或 path/paths 用 glob）
+    require_resolution: "4656x3496"
+    exclude_dirs: [sensor]
+    tags: [year:2024, device:16mp]
+    year/device/...              # 直接当字段
+
+通用选项（两种模式都支持）
+---------------------------------------------------------
+    compute_metadata: true   # 逐张读图算宽高/大小（HDD 上图多会慢）
+    drop_corrupt: true       # 默认 true：算 metadata 时打不开的图，先记到
+                             #   exports/<name>_corrupt.txt，再从数据集剔除
 """
+import os
+import re
 import sys
+import glob
 import yaml
 import fiftyone as fo
+from fiftyone import ViewField as F
+from PIL import Image
+
+IMG_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff")
+RES_RE = re.compile(r"(\d{3,4})x(\d{3,4})")
+
+
+def collect_from_roots(roots, exclude_dirs):
+    files = []
+    for root in roots:
+        for dp, dns, fns in os.walk(root):
+            dns[:] = [d for d in dns if d not in exclude_dirs]
+            for f in fns:
+                if f.lower().endswith(IMG_EXTS):
+                    files.append(os.path.join(dp, f))
+    return files
+
+
+def collect_from_globs(patterns):
+    out = []
+    for pat in patterns:
+        dirs = glob.glob(pat) if any(c in pat for c in "*?[") else [pat]
+        for d in dirs:
+            if os.path.isdir(d):
+                for ext in IMG_EXTS:
+                    out += glob.glob(f"{d}/**/*{ext}", recursive=True)
+                    out += glob.glob(f"{d}/**/*{ext.upper()}", recursive=True)
+            elif d.lower().endswith(IMG_EXTS):
+                out.append(d)
+    return out
+
+
+def resolution(path):
+    """优先从路径解析 WxH；解析不到才读像素头。"""
+    m = RES_RE.search(path)
+    if m:
+        return f"{m.group(1)}x{m.group(2)}"
+    try:
+        w, h = Image.open(path).size
+        return f"{w}x{h}"
+    except Exception:
+        return None
+
+
+def build_plan(m):
+    """返回 {filepath: 字段dict}。靠后的 source 覆盖靠前的。"""
+    defaults = m.get("defaults", {})
+    plan = {}
+    overlaps = 0
+
+    if m.get("sources"):
+        for src in m["sources"]:
+            attrs = {**defaults, **src.get("set", {})}
+            req = src.get("require_resolution")
+            files = collect_from_globs(src["paths"] if "paths" in src
+                                       else [src["path"]])
+            for p in files:
+                if req and resolution(p) != req:
+                    continue
+                if p in plan:
+                    overlaps += 1
+                plan[p] = {**attrs, "_tags": list(src.get("tags", []))}
+    else:
+        # 简易模式
+        if m.get("root"):
+            roots = m["root"] if isinstance(m["root"], list) else [m["root"]]
+            files = collect_from_roots(roots, set(m.get("exclude_dirs", [])))
+        else:
+            files = collect_from_globs(m.get("paths") or [m["path"]])
+        req = m.get("require_resolution")
+        attrs = {k: m[k] for k in ("year", "location", "device", "site", "focus")
+                 if k in m}
+        for p in files:
+            if req and resolution(p) != req:
+                continue
+            plan[p] = {**defaults, **attrs, "_tags": list(m.get("tags", []))}
+
+    if overlaps:
+        print(f"[warn] {overlaps} 张图被多个 source 命中，按靠后的 source 取值")
+    return plan
 
 
 def main(manifest_path):
     with open(manifest_path) as f:
         m = yaml.safe_load(f)
-
     name = m["name"]
-    path = m["path"]
-    tags = m.get("tags", [])
 
-    # 已存在则覆盖重建（清单是真相源）
+    plan = build_plan(m)
+    if not plan:
+        sys.exit(f"[err] 没匹配到任何图片，检查清单：{manifest_path}")
+
     if name in fo.list_datasets():
         fo.delete_dataset(name)
+    dataset = fo.Dataset(name)
 
-    # 原地引用：递归收集 path 下的图片，不复制文件
-    dataset = fo.Dataset.from_dir(
-        dataset_dir=path,
-        dataset_type=fo.types.ImageDirectory,
-        name=name,
-    )
+    samples = []
+    for p in sorted(plan):
+        attrs = dict(plan[p])
+        tags = attrs.pop("_tags", [])
+        samples.append(fo.Sample(filepath=p, tags=tags, **attrs))  # attrs -> 字段
+    dataset.add_samples(samples)
     dataset.persistent = True
-    dataset.tags = list(tags)
 
-    # 把 year/location/device 存成样本字段，方便筛选
-    for key in ("year", "location", "device"):
-        if key in m:
-            dataset.set_values(key, [m[key]] * len(dataset))
+    if m.get("compute_metadata", True):
+        dataset.compute_metadata()       # 损坏图会失败 -> metadata.width 为空
 
-    dataset.compute_metadata()
-    print(f"[ok] {name}: {len(dataset)} samples  tags={tags}")
+        if m.get("drop_corrupt", True):
+            bad = dataset.match(F("metadata.width") == None)  # noqa: E711
+            paths = bad.values("filepath")
+            if paths:
+                os.makedirs("exports", exist_ok=True)
+                log = os.path.join("exports", f"{name}_corrupt.txt")
+                with open(log, "w") as fh:
+                    fh.write("\n".join(paths) + "\n")
+                print(f"[warn] 损坏/无法读取 {len(paths)} 张，已剔除（清单见 {log}）：")
+                for p in paths[:10]:
+                    print(f"    {p}")
+                if len(paths) > 10:
+                    print(f"    ... 共 {len(paths)} 张")
+                dataset.delete_samples(bad.values("id"))
+
+    print(f"[ok] {name}: {len(dataset)} 张图")
+    schema = [k for k in dataset.get_field_schema()
+              if k not in ("id", "filepath", "tags", "metadata", "created_at",
+                           "last_modified_at")]
+    print(f"     字段: {schema}")
+    for fld in schema:
+        try:
+            print(f"     {fld}: {dataset.count_values(fld)}")
+        except Exception:
+            pass
     print(f"     浏览: fiftyone app launch")
 
 

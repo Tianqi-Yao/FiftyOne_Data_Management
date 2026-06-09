@@ -1,0 +1,174 @@
+# 自动生成的草稿，请人工审阅：改 location 真实地名、挪放错的目录。
+# 跑: python scripts/import_dataset.py <本文件>
+name: swd_2024_eachfarm_16mp
+defaults: { year: 2024, device: 16MP, status: cold }   # 所有组共享的字段
+compute_metadata: true
+sources:
+  # ---- air1 / auto: 585 张 ----
+  - set: { site: air1, location: Airport COMO Elderberry Farm, focus: auto }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air1/Desktop_air1_0711_0701_none/images/4656x3496_autofocus"   # 91 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air1/Desktop_air1_0806_0712/images/4656x3496_autofocus"   # 60 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air1/Desktop_air1_0909_0826/images/4656x3496_autofocus"   # 434 张
+  # ---- air1 / fixed: 3339 张 ----
+  - set: { site: air1, location: Airport COMO Elderberry Farm, focus: fixed }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air1/Desktop_air1_0711_0701_none/images/4656x3496_fixedfocus"   # 49 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air1/Desktop_air1_0806_0712/images/4656x3496_fixedfocus"   # 299 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air1/Desktop_air1_0909_0826/images/4656x3496_fixedfocus"   # 2991 张
+  # ---- air2 / auto: 2120 张 ----
+  - set: { site: air2, location: Airport COMO Elderberry Farm, focus: auto }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air2/Desktop_air2_0805_0701/images/4656x3496_autofocus"   # 1075 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air2/Desktop_air2_0823_0805/images/4656x3496_autofocus"   # 551 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air2/Desktop_air2_0909_0824/images/4656x3496_autofocus"   # 494 张
+  # ---- air2 / fixed: 11081 张 ----
+  - set: { site: air2, location: Airport COMO Elderberry Farm, focus: fixed }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air2/Desktop_air2_0805_0701/images/4656x3496_fixedfocus"   # 3887 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air2/Desktop_air2_0823_0805/images/4656x3496_fixedfocus"   # 2755 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/air2/Desktop_air2_0909_0824/images/4656x3496_fixedfocus"   # 4439 张
+  # ---- jeff / auto: 4624 张 ----
+  - set: { site: jeff, location: Jefferson city Carver Farm, focus: auto }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/jeff/Desktop_jeff_0606_0601_none/images/4656x3496_autofocus"   # 240 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/jeff/Desktop_jeff_0707_0611/images/4656x3496_autofocus"   # 1178 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/jeff/Desktop_jeff_0828_0707/images/4656x3496_autofocus"   # 2360 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/jeff/Desktop_jeff_1011_0829_none/images/4656x3496_autofocus"   # 846 张
+  # ---- jeff / fixed: 11441 张 ----
+  - set: { site: jeff, location: Jefferson city Carver Farm, focus: fixed }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/jeff/Desktop_jeff_0606_0601_none/images/4656x3496_fixedfocus"   # 238 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/jeff/Desktop_jeff_0707_0611/images/4656x3496_fixedfocus"   # 2468 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/jeff/Desktop_jeff_0828_0707/images/4656x3496_fixedfocus"   # 2366 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/jeff/Desktop_jeff_1011_0829_none/images/4656x3496_fixedfocus"   # 6369 张
+  # ---- lloyd / auto: 4190 张 ----
+  - set: { site: lloyd, location: Lloyd Farm, focus: auto }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0521_0513_none/images/4656x3496_autofocus"   # 1270 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0606_0531/images/4656x3496_autofocus"   # 487 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0617_0611/images/4656x3496_autofocus"   # 84 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0711_0617/images/4656x3496_autofocus"   # 717 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0805_0711/images/4656x3496_autofocus"   # 532 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0830_0805/images/4656x3496_autofocus"   # 382 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0909_0829/images/4656x3496_autofocus"   # 197 张
+  # ---- lloyd / fixed: 8001 张 ----
+  - set: { site: lloyd, location: Lloyd Farm, focus: fixed }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0521_0513_none/images/4656x3496_fixedfocus"   # 751 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0606_0531/images/4656x3496_fixedfocus"   # 485 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0617_0611/images/4656x3496_fixedfocus"   # 84 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0711_0617/images/4656x3496_fixedfocus"   # 725 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0805_0711/images/4656x3496_fixedfocus"   # 2835 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0830_0805/images/4656x3496_fixedfocus"   # 1979 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/lloyd/Desktop_lloyd_0909_0829/images/4656x3496_fixedfocus"   # 1142 张
+
+  # ---- ms1 / auto: 2673 张 ----
+  - set: { site: ms1, location: MSU Mountain Grove, focus: auto }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms1/Desktop_ms1_0706_0605/images/4656x3496_autofocus"   # 792 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms1/Desktop_ms1_0730_0707/images/4656x3496_autofocus"   # 674 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms1/Desktop_ms1_0826_0730/images/4656x3496_autofocus"   # 687 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms1/Desktop_ms1_0927_0826/images/4656x3496_autofocus"   # 520 张
+  # ---- ms1 / fixed: 13886 张 ----
+  - set: { site: ms1, location: MSU Mountain Grove, focus: fixed }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms1/Desktop_ms1_0706_0605/images/4656x3496_fixedfocus"   # 753 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms1/Desktop_ms1_0730_0707/images/4656x3496_fixedfocus"   # 2538 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms1/Desktop_ms1_0826_0730/images/4656x3496_fixedfocus"   # 2687 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms1/Desktop_ms1_0927_0826/images/4656x3496_fixedfocus"   # 7908 张
+
+  # ---- ms2 / auto: 3181 张 ----
+  - set: { site: ms2, location: MSU Mountain Grove, focus: auto }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms2/Desktop_ms2_0706_0605/images/4656x3496_autofocus"   # 905 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms2/Desktop_ms2_0730_0705/images/4656x3496_autofocus"   # 731 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms2/Desktop_ms2_0826_0730/images/4656x3496_autofocus"   # 751 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms2/Desktop_ms2_0927_0826/images/4656x3496_autofocus"   # 794 张
+  # ---- ms2 / fixed: 12254 张 ----
+  - set: { site: ms2, location: MSU Mountain Grove, focus: fixed }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms2/Desktop_ms2_0706_0605/images/4656x3496_fixedfocus"   # 906 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms2/Desktop_ms2_0730_0705/images/4656x3496_fixedfocus"   # 3656 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms2/Desktop_ms2_0826_0730/images/4656x3496_fixedfocus"   # 3742 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/ms2/Desktop_ms2_0927_0826/images/4656x3496_fixedfocus"   # 3950 张
+
+  # ---- southfarm1 / auto: 1032 张 ----
+  - set: { site: southfarm1, location: Mizzou South Farm, focus: auto }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm1/Desktop_southfarm1_0712_0701/images/4656x3496_autofocus"   # 240 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm1/Desktop_southfarm1_0903_0823_none/images/4656x3496_autofocus"   # 275 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm1/Desktop_southfarm1_1011_0911/images/4656x3496_autofocus"   # 517 张
+  # ---- southfarm1 / fixed: 9006 张 ----
+  - set: { site: southfarm1, location: Mizzou South Farm, focus: fixed }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm1/Desktop_southfarm1_0712_0701/images/4656x3496_fixedfocus"   # 240 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm1/Desktop_southfarm1_0903_0823_none/images/4656x3496_fixedfocus"   # 2825 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm1/Desktop_southfarm1_1011_0911/images/4656x3496_fixedfocus"   # 5941 张
+  # ---- southfarm2 / auto: 1676 张 ----
+  - set: { site: southfarm2, location: Mizzou South Farm, focus: auto }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm2/Desktop_southfarm2_0805_0712_none/images/4656x3496_autofocus"   # 249 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm2/Desktop_southfarm2_0823_0805_none/images/4656x3496_autofocus"   # 534 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm2/Desktop_southfarm2_1011_0824_none/images/4656x3496_autofocus"   # 893 张
+  # ---- southfarm2 / fixed: 12916 张 ----
+  - set: { site: southfarm2, location: Mizzou South Farm, focus: fixed }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm2/Desktop_southfarm2_0805_0712_none/images/4656x3496_fixedfocus"   # 989 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm2/Desktop_southfarm2_0823_0805_none/images/4656x3496_fixedfocus"   # 2136 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/southfarm2/Desktop_southfarm2_1011_0824_none/images/4656x3496_fixedfocus"   # 9791 张
+  # ---- sw1 / auto: 3764 张 ----
+  - set: { site: sw1, location: Mizzou SW-REEC, focus: auto }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0606_0605/images/4656x3496_autofocus"   # 81 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0615_0605/images/4656x3496_autofocus"   # 194 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0706_0615/images/4656x3496_autofocus"   # 956 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0730_0705/images/4656x3496_autofocus"   # 450 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0826_0731/images/4656x3496_autofocus"   # 1098 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0927_0826/images/4656x3496_autofocus"   # 985 张
+  # ---- sw1 / fixed: 14991 张 ----
+  - set: { site: sw1, location: Mizzou SW-REEC, focus: fixed }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0606_0605/images/4656x3496_fixedfocus"   # 85 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0615_0605/images/4656x3496_fixedfocus"   # 205 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0706_0615/images/4656x3496_fixedfocus"   # 955 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0730_0705/images/4656x3496_fixedfocus"   # 1295 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0826_0731/images/4656x3496_fixedfocus"   # 6541 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw1/Desktop_sw1_0927_0826/images/4656x3496_fixedfocus"   # 5910 张
+  # ---- sw2 / auto: 2261 张 ----
+  - set: { site: sw2, location: Mizzou SW-REEC, focus: auto }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw2/Desktop_sw2_0615_0605_none/images/4656x3496_autofocus"   # 194 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw2/Desktop_sw2_0706_0615_none/images/4656x3496_autofocus"   # 161 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw2/Desktop_sw2_0706_0615_none/old_before_615/images/4656x3496_autofocus"   # 203 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw2/Desktop_sw2_0826_0730/images/4656x3496_autofocus"   # 748 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw2/Desktop_sw2_0927_0826_none/images/4656x3496_autofocus"   # 955 张
+  # ---- sw2 / fixed: 11827 张 ----
+  - set: { site: sw2, location: Mizzou SW-REEC, focus: fixed }   # TODO location
+    require_resolution: "4656x3496"
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw2/Desktop_sw2_0615_0605_none/images/4656x3496_fixedfocus"   # 205 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw2/Desktop_sw2_0706_0615_none/images/4656x3496_fixedfocus"   # 168 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw2/Desktop_sw2_0706_0615_none/old_before_615/images/4656x3496_fixedfocus"   # 208 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw2/Desktop_sw2_0730_0706/images/4656x3496_fixedfocus"   # 766 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw2/Desktop_sw2_0826_0730/images/4656x3496_fixedfocus"   # 3802 张
+      - "/media/tianqi/16tb/SWD/01_Data/2024_SWD_data_RAW/eachFarm/sw2/Desktop_sw2_0927_0826_none/images/4656x3496_fixedfocus"   # 6678 张
