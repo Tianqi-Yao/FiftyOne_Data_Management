@@ -1,0 +1,14 @@
+# 数据与导出不进版本管理（图片原地引用，体量大）
+/data/hot
+/data/cold
+/exports/*
+!/exports/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# 系统
+.DS_Store
+._*
