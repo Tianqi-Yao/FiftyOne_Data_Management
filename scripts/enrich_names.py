@@ -49,9 +49,10 @@ def main(arg):
         if "time" not in info:
             unparsed_ids.append(_id)
 
-    dataset.set_values("date", dates)            # -> DateField
-    dataset.set_values("time", times)            # -> DateTimeField（可拖时段，HH:MM）
-    dataset.set_values("focal_length", focals)   # -> IntField
+    # 某字段全 None 就跳过（如 South 文件名没焦距）——否则 set_values 无法推断类型报错
+    for fname, vals in (("date", dates), ("time", times), ("focal_length", focals)):
+        if any(v is not None for v in vals):
+            dataset.set_values(fname, vals)
 
     # 先清旧标记，保证可重复跑（已能解析的不该再背着旧 tag）
     stale = dataset.match_tags("qc:name_unparsed")
@@ -69,9 +70,11 @@ def main(arg):
             os.remove(stale)   # 没有异常了，清掉旧报告
 
     ok = sum(1 for t in times if t is not None)
-    print(f"[ok] {name}: {len(ids)} 张，{ok} 张拿到 date/time/focal")
-    print(f"     focal_length: {dataset.bounds('focal_length')}")
-    print(f"     date 范围:    {dataset.bounds('date')}")
+    print(f"[ok] {name}: {len(ids)} 张，{ok} 张拿到 date/time")
+    schema = dataset.get_field_schema()
+    for f in ("date", "time", "focal_length"):       # 只报存在的字段
+        if f in schema:
+            print(f"     {f}: {dataset.bounds(f)}")
 
 
 if __name__ == "__main__":

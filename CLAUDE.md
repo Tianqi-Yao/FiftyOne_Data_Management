@@ -58,11 +58,15 @@
   格式支持少、丢 mask）。旋钮：conf/iou/overlap/slice/batch。整图模式分割大图会 OOM。
 - `export_labelme.py <数据集> [过滤...] [outdir=]` —— 把预测字段导成 X-AnyLabeling 的 LabelMe JSON
   （分割→polygon，框→rectangle）。FiftyOne 无原生 LabelMe 导出，故自写；YOLO/COCO 用 `view.export(...)`。
+- `count_preds.py <数据集> [过滤...] [conf= field=]` —— 按阈值把"每图框数"写进字段（服务端聚合，秒级）。
+  App 网格**没有随滑块实时变的计数**（OSS 限制）；要换阈值就重跑，或在 App 打开单图看侧栏实时数。
 - `viewspec.py` —— `build_view(dataset, tokens)`，view token 解析（site=/view=/limit=…），predict/export/coverage 共用。
 
 **scripts/ 保持扁平**：新增脚本就在 `quickstart.md` 的脚本表加一行；**不要**用数字前缀
 （`from import_dataset import` 会语法报错）或子目录（被 import 的模块跨目录会断）。
 `quickstart.md`（根）= 速查表/索引，怎么跑看它。
+**成批/重复跑的命令清单**放 `runs/*.sh`（如 `runs/coverage_all_sites.sh`）——纯 shell 命令、
+可整跑或单行复制、也是跑过啥的记录；不是 Python 工具（那些在 scripts/）。
 - `coverage.py <数据集> [field=value...|view=名|label=名] [links] [基址]` —— 采集覆盖热力图
   （Day×Hour，终端 ASCII + PNG + 交互 HTML），可对**任意过滤 view** 出图，列出无数据的天。
   核心 `coverage(view, label, base_url, make_links)` 可在 notebook 直接传 view。**深链默认
