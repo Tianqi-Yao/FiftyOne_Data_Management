@@ -77,6 +77,7 @@ def main(root, target, out=None):
         f"name: {name}   # TODO 按约定改名，如 swd_<year>_<场>_<device>",
         f"defaults: {{ }}   # TODO 补共享字段，如 {{ year: 2024, device: 16MP, status: cold }}",
         f"compute_metadata: true",
+        f"parse_filename: true",
         f"sources:",
     ]
     for key in sorted(groups):

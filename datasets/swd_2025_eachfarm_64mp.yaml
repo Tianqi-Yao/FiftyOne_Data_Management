@@ -1,7 +1,7 @@
 # 自动生成的草稿，请人工审阅：改 name、补 defaults、改 location 真实地名、挪放错的目录。
 # 跑: python scripts/import_dataset.py <本文件>
 name: swd_2025_eachfarm_64mp_south   # TODO 按约定改名，如 swd_<year>_<场>_<device>
-defaults: { year: 2025, device: 16MP, status: cold }   # 所有组共享的字段
+defaults: { year: 2025, device: 64MP, status: cold }   # 所有组共享的字段
 compute_metadata: true
 parse_filename: true   # 从文件名解析 date / time / focal_length 三个字段
 sources:

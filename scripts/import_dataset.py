@@ -43,6 +43,8 @@
                              #   路径写到 exports/<name>_unparsed_names.txt 待补救
                              #   解析规则在仓库根 filename_patterns.yaml（不写死在代码）
     index: true              # 默认 true：给所有结构化字段建索引（加速 App 筛选/排序）
+    active_fields: [...]     # import 末尾设为 App 默认显示字段；不写=用 app_defaults.DEFAULT
+                             #   (只设该数据集存在的字段，不存在的跳过)；写 false=不设
 """
 import os
 import re
@@ -53,6 +55,9 @@ from datetime import date as _date, datetime as _datetime
 import fiftyone as fo
 from fiftyone import ViewField as F
 from PIL import Image
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from app_defaults import set_active_fields, DEFAULT as ACTIVE_DEFAULT
 
 IMG_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff")
 RES_RE = re.compile(r"(\d{3,4})x(\d{3,4})")
@@ -108,9 +113,11 @@ def load_patterns():
 
 
 def parse_name(path, year, patterns):
-    """从文件名解析 date(DateField) / time(DateTimeField 可拖) / focal_length（解析不到的不加）。
-
-    patterns: 来自 load_patterns() 的正则列表。从上到下，第一条匹配出 hh/mm 的胜出。
+    """从文件名解析派生字段（解析不到的不加）。命名组 -> 字段：
+        year/mon/day -> date(DateField)；hh/mm -> time(DateTimeField，可拖 HH:MM)
+        focal -> focal_length(IntField，16MP 三位焦距)
+        lp    -> focal_length_64mp(FloatField，64MP 树莓派镜头位置/屈光度，可负)
+    patterns 来自 load_patterns()；从上到下，第一条匹配出 hh/mm 的胜出。
     """
     stem = os.path.splitext(os.path.basename(path))[0]
     out = {}
@@ -127,11 +134,12 @@ def parse_name(path, year, patterns):
                 out["date"] = _date(int(y), int(g["mon"]), int(g["day"]))
             except ValueError:
                 pass
-        # time 存成 DateTimeField（固定假日期 2000-01-01 + 真实时分）：
-        # App 里就是带 HH:MM 的可拖时段滑块
+        # time 存成 DateTimeField（固定假日期 2000-01-01 + 真实时分）：可拖 HH:MM 滑块
         out["time"] = _datetime(2000, 1, 1, int(g["hh"]), int(g["mm"]))
         if g.get("focal"):
             out["focal_length"] = int(g["focal"])
+        if g.get("lp"):
+            out["focal_length_64mp"] = float(g["lp"])
         break
     return out
 
@@ -256,6 +264,10 @@ def main(manifest_path):
     if m.get("index", True):                 # 给结构化字段建索引（加速 App 筛选）
         created = ensure_indexes(dataset, schema)
         print(f"     索引: 新建 {created or '无（已存在）'}")
+
+    af = m.get("active_fields", ACTIVE_DEFAULT)   # App 默认显示字段（active_fields: false 可关）
+    if af:
+        print(f"     App 默认显示字段: {set_active_fields(dataset, af)}")
     for fld in schema:
         try:
             print(f"     {fld}: {dataset.count_values(fld)}")

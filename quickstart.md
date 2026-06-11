@@ -32,8 +32,9 @@ conda run -n fif python scripts/import_dataset.py datasets/swd_2025_eachfarm_64m
 # 3.（可选）只重算文件名派生字段 date/time/focal（不读图、秒级、幂等）
 conda run -n fif python scripts/enrich_names.py swd_2025_eachfarm_64mp
 
-# 4.（可选）设 App 里默认显示的字段
-conda run -n fif python scripts/app_defaults.py swd_2025_eachfarm_64mp site focus date time focal_length
+# 4.（一般不用）import 末尾已自动设 App 默认显示字段（site/location/focus/time/date/filepath）。
+#    只有想换成别的字段时才跑：
+conda run -n fif python scripts/app_defaults.py swd_2025_eachfarm_64mp site location focus time date filepath focal_length_64mp
 ```
 文件名解析规则在根目录 `filename_patterns.yaml`（加新格式只改这里，不改代码）。
 
@@ -86,6 +87,7 @@ bash runs/coverage_all_sites.sh          # 给每个 site 出覆盖图
 | `export_labelme.py` | 预测导出 LabelMe(X-AnyLabeling) | 模型 |
 | `count_preds.py` | 按阈值把每图框数写进字段 | 模型 |
 | `coverage.py` | 采集覆盖热力图 | 工具 |
+| `remap_field.py` | 批量改字段的值（改文件内超参数后跑，非 argv）| 工具 |
 | `viewspec.py` | `build_view` 过滤解析（被上面 import，**别直接跑**）| 库 |
 
 > 新增脚本时：在本表加一行。scripts/ 保持扁平，别用数字前缀或子目录（会破坏互相 import）。

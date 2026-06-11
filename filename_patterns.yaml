@@ -14,6 +14,7 @@ patterns:
   #    例 4656x3496_2025-04-26_19-26-40_focus525.jpg  (2025-04-26 19:26, 秒丢弃, 焦距525)
   - '(?P<year>\d{4})-(?P<mon>\d{2})-(?P<day>\d{2})_(?P<hh>\d{2})-(?P<mm>\d{2})-\d{2}_focus(?P<focal>\d+)'
 
-  # 3) YYYYMMDD_HHMMSS_<lp7.57|LeftTop...>  (2025 64MP South；秒丢弃，lp 是镜头位置不解析)
-  #    例 20250804_163949_lp7.57.jpg / 20250724_185158_LeftTop.jpg
-  - '(?P<year>\d{4})(?P<mon>\d{2})(?P<day>\d{2})_(?P<hh>\d{2})(?P<mm>\d{2})(?P<ss>\d{2})'
+  # 3) YYYYMMDD_HHMMSS[_lp<float>]  (64MP 树莓派相机)
+  #    例 20250804_163949_lp7.57.jpg(手动对焦,有 lp) / 20250724_185158_LeftTop.jpg(自动对焦,无 lp)
+  #    lp = 镜头位置/屈光度(可负) -> 命名组 lp -> 字段 focal_length_64mp(float)；没有就留空
+  - '(?P<year>\d{4})(?P<mon>\d{2})(?P<day>\d{2})_(?P<hh>\d{2})(?P<mm>\d{2})(?P<ss>\d{2})(?:_lp(?P<lp>-?\d+(?:\.\d+)?))?'

@@ -44,20 +44,24 @@
 ## 脚本（保持这套；扩展，不要增殖）
 
 - `import_dataset.py <清单>` —— 一次跑完的全量导入（收集 → 字段 → `compute_metadata`
-  → 剔损坏 → 解析文件名）。
+  → 剔损坏 → 解析文件名 → 建索引 → 设 App 默认显示字段）。**清单要带 `parse_filename: true` 才会解析
+  文件名**（make_sources 草稿已默认带）。默认显示字段见 `app_defaults.DEFAULT`（只设存在的，缺的跳过，
+  不报错）；清单 `active_fields:` 可覆盖，`false`=不设。
 - `make_sources.py <根> <WxH> <out.yaml>` —— 扫描目录，生成可编辑的 `sources:` 映射
   草稿（按 site/focus 分组，逐目录列出供手改）。
-- `enrich_names.py <数据集|清单>` —— 可重复跑、**不读图片**：(重新)解析文件名 →
-  `date/time/focal_length`。导入过后只想重算文件名派生字段时用。与
-  `import_dataset.py` 共用 `parse_name`（单一来源）。
-- `app_defaults.py <数据集> [字段...]` —— 设 App 默认激活/显示的字段（写 `app_config.active_fields`，
-  持久化；重新 import 会重置 app_config，重跑即可恢复）。
+- `enrich_names.py <数据集|清单>` —— 可重复跑、**不读图片**：(重新)解析文件名，**写 parse_name
+  返回的所有派生字段**（date/time、16MP→`focal_length`、64MP→`focal_length_64mp`…，字段无关）。
+  与 `import_dataset.py` 共用 `parse_name`（单一来源）。加新派生字段只动 filename_patterns + parse_name。
+- `app_defaults.py <数据集> [字段...]` —— 设 App 默认激活/显示的字段（写 `app_config.active_fields`）。
+  核心 `set_active_fields(dataset, fields)` 被 `import_dataset.py` 复用（导入末尾自动设默认那组）。
 - `predict.py <weights.pt> <数据集> [过滤...] [slice=640]` —— 用 YOLO `.pt`（检测/分割自动判别，
   **不用 ONNX**，`fif` 环境）把预测写进 label 字段（默认 `predictions`）。**高分辨率必加 `slice=`**
   走**自写切片**（cv2 切片+批量推理+box-IoU 贪心 NMS 合并回原图，不 OOM）。**不用 SAHI**（其 PIL 慢、
   格式支持少、丢 mask）。旋钮：conf/iou/overlap/slice/batch。整图模式分割大图会 OOM。
 - `export_labelme.py <数据集> [过滤...] [outdir=]` —— 把预测字段导成 X-AnyLabeling 的 LabelMe JSON
   （分割→polygon，框→rectangle）。FiftyOne 无原生 LabelMe 导出，故自写；YOLO/COCO 用 `view.export(...)`。
+- `remap_field.py` —— 批量改字段的【值】（App 只能改字段名改不了值）。**用文件内超参数、不用 argv**
+  （仿 pipeline_v2 风格）；默认 `DRY_RUN=True` 先预览，确认再 False 写入。
 - `count_preds.py <数据集> [过滤...] [conf= field=]` —— 按阈值把"每图框数"写进字段（服务端聚合，秒级）。
   App 网格**没有随滑块实时变的计数**（OSS 限制）；要换阈值就重跑，或在 App 打开单图看侧栏实时数。
 - `viewspec.py` —— `build_view(dataset, tokens)`，view token 解析（site=/view=/limit=…），predict/export/coverage 共用。

@@ -1,0 +1,23 @@
+# python scripts/make_sources.py /media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW 4656x3496 datasets/swd_2026_eachfarm_16mp.yaml
+# 自动生成的草稿，请人工审阅：改 name、补 defaults、改 location 真实地名、挪放错的目录。
+# 跑: python scripts/import_dataset.py <本文件>
+name: swd_2026_eachfarm_16mp
+defaults: { year: 2026, device: 16MP, status: cold }   # 所有组共享的字段
+compute_metadata: true
+parse_filename: true
+sources:
+  # ---- air3 / unknown: 20123 张 ----
+  - set: { site: air3, location: Airport COMO Elderberry Farm, focus: fixed }  
+    # 分辨率(4656x3496)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/air3/output_0429_0520/ManualFocus"   # 11942 张
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/air3/output_0520-0602/ManualFocus"   # 8181 张
+  # ---- air4 / unknown: 13332 张 ----
+  - set: { site: air4, location: Airport COMO Elderberry Farm, focus: fixed }  
+    # 分辨率(4656x3496)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/air4/output_0520_0602/ManualFocus"   # 5129 张
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/air4/output_0430-0520/ManualFocus"   # 8203 张
+
+
+# python scripts/import_dataset.py datasets/swd_2026_eachfarm_16mp.yaml

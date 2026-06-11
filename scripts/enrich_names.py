@@ -40,17 +40,13 @@ def main(arg):
     years = dataset.values("year") if "year" in dataset.get_field_schema() \
         else [None] * len(ids)
 
-    dates, times, focals, unparsed_ids = [], [], [], []
-    for _id, p, y in zip(ids, paths, years):
-        info = parse_name(p, y, patterns)
-        dates.append(info.get("date"))
-        times.append(info.get("time"))
-        focals.append(info.get("focal_length"))
-        if "time" not in info:
-            unparsed_ids.append(_id)
+    infos = [parse_name(p, y, patterns) for p, y in zip(paths, years)]
+    unparsed_ids = [ids[i] for i, info in enumerate(infos) if "time" not in info]
 
-    # 某字段全 None 就跳过（如 South 文件名没焦距）——否则 set_values 无法推断类型报错
-    for fname, vals in (("date", dates), ("time", times), ("focal_length", focals)):
+    # 字段无关：parse_name 返回啥就写啥（date/time/focal_length/focal_length_64mp…）
+    # 某字段全 None 就跳过（如某数据集没焦距）——否则 set_values 无法推断类型报错
+    for fname in sorted(set().union(*infos)) if infos else []:
+        vals = [info.get(fname) for info in infos]
         if any(v is not None for v in vals):
             dataset.set_values(fname, vals)
 
@@ -69,10 +65,10 @@ def main(arg):
         if os.path.exists(stale):
             os.remove(stale)   # 没有异常了，清掉旧报告
 
-    ok = sum(1 for t in times if t is not None)
+    ok = sum(1 for info in infos if "time" in info)
     print(f"[ok] {name}: {len(ids)} 张，{ok} 张拿到 date/time")
     schema = dataset.get_field_schema()
-    for f in ("date", "time", "focal_length"):       # 只报存在的字段
+    for f in (sorted(set().union(*infos)) if infos else []):   # 报告实际写入的字段
         if f in schema:
             print(f"     {f}: {dataset.bounds(f)}")
 
