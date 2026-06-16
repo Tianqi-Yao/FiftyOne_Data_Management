@@ -38,6 +38,16 @@ conda run -n fif python scripts/app_defaults.py swd_2025_eachfarm_64mp site loca
 ```
 文件名解析规则在根目录 `filename_patterns.yaml`（加新格式只改这里，不改代码）。
 
+### 新一批数据：staging → 处理 → 并进主数据集
+新批次别直接并进主集（否则后续跑模型会把旧图也重复跑）。先单独成集处理，再合并：
+```bash
+# ① 写新清单（只指向新数据目录），导成独立 staging 数据集（新名字 → 全新建）
+conda run -n fif python scripts/import_dataset.py datasets/swd_2026_eachfarm_16mp_batchN.yaml
+# ② 在 staging 上跑 predict / 复核 / 导出（只处理新图，不重复跑旧数据）
+# ③ 处理到位后并进主数据集（按 filepath 去重，带预测/标注/字段一起进；source 不动，自己删）
+conda run -n fif python scripts/merge_datasets.py swd_2026_eachfarm_16mp_batchN swd_2026_eachfarm_16mp
+```
+
 ## 模型预测 → 导出标注
 ```bash
 # 跑模型（高分辨率必加 slice=：切片+合并，不 OOM）。先 limit 试小批
@@ -86,6 +96,7 @@ bash runs/coverage_all_sites.sh          # 给每个 site 出覆盖图
 | `predict.py` | YOLO `.pt` 切片推理打标注 | 模型 |
 | `export_labelme.py` | 预测导出 LabelMe(X-AnyLabeling) | 模型 |
 | `count_preds.py` | 按阈值把每图框数写进字段 | 模型 |
+| `merge_datasets.py` | 把一个数据集按 filepath 并进另一个（staging→主集）| 工具 |
 | `coverage.py` | 采集覆盖热力图 | 工具 |
 | `remap_field.py` | 批量改字段的值（改文件内超参数后跑，非 argv）| 工具 |
 | `viewspec.py` | `build_view` 过滤解析（被上面 import，**别直接跑**）| 库 |

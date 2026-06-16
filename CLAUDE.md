@@ -65,6 +65,9 @@
 - `count_preds.py <数据集> [过滤...] [conf= field=]` —— 按阈值把"每图框数"写进字段（服务端聚合，秒级）。
   App 网格**没有随滑块实时变的计数**（OSS 限制）；要换阈值就重跑，或在 App 打开单图看侧栏实时数。
 - `viewspec.py` —— `build_view(dataset, tokens)`，view token 解析（site=/view=/limit=…），predict/export/coverage 共用。
+- `merge_datasets.py <source> <target> [skip|overwrite]` —— 把一个数据集按 **filepath** 整体并进另一个
+  （FiftyOne `merge_samples`，带 predictions/标注/tags/字段一起进）。**新批次先成独立 staging 数据集**
+  跑预测/复核（不重复跑旧图），处理到位再并进主集；target 就地变大，source 不动（自己手动删）。
 
 **scripts/ 保持扁平**：新增脚本就在 `quickstart.md` 的脚本表加一行；**不要**用数字前缀
 （`from import_dataset import` 会语法报错）或子目录（被 import 的模块跨目录会断）。
