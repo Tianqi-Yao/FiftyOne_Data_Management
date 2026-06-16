@@ -21,9 +21,7 @@ label=<名>       给输出文件/视图命名（默认从过滤推断）
 ## 数据流水线（按顺序）
 ```bash
 # 1. 扫描原始目录 → 生成可编辑的映射草稿 yaml（按 site/focus 分组）
-conda run -n fif python scripts/make_sources.py \
-    /media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South 9248x6944 \
-    datasets/swd_2025_eachfarm_64mp.yaml
+conda run -n fif python scripts/make_sources.py media/tianqi/16tb/SWD/01_Data/2025_SWD_data_RAW/02_South 9248x6944 datasets/swd_2025_eachfarm_64mp.yaml
 #    → 人工审阅 yaml：改 name、补 defaults(year/device/status)、改 location 真实地名、删不要的组
 
 # 2. 按 yaml 导入到 FiftyOne（原地引用，不复制；含 metadata、剔损坏、解析文件名）
@@ -51,17 +49,15 @@ conda run -n fif python scripts/merge_datasets.py swd_2026_eachfarm_16mp_batchN 
 ## 模型预测 → 导出标注
 ```bash
 # 跑模型（高分辨率必加 slice=：切片+合并，不 OOM）。先 limit 试小批
-conda run -n fif python scripts/predict.py /path/to/best.pt swd_2024_eachfarm_16mp \
-    site=air1 limit=50 slice=640 overlap=0.2 conf=0.25
+conda run -n fif python scripts/predict.py /path/to/best.pt swd_2024_eachfarm_16mp site=air1 limit=50 slice=640 overlap=0.2 conf=0.25
 #   也可在 App 里筛/选好图 → Save view → 用 view= 直接跑那批：
-conda run -n fif python scripts/predict.py /path/to/best.pt swd_2024_eachfarm_16mp view=good slice=640
+conda run -n fif python scripts/predict.py models/yolo11npt_20pct_null_images_add_rawData_list_train_val_test_8.pt swd_2026_eachfarm_16mp_v2 view=good label_field=conf10pct conf=0.1
 #   旋钮：conf=(召回) iou=(去重) slice= overlap= batch= device=cpu label_field=  过滤：site=/focus=/view=/limit=
 
 conda run -n fif fiftyone app launch          # 复核：图上叠加的框/多边形，可改
 
 # 导出 LabelMe JSON 给 X-AnyLabeling（分割→polygon，框→rectangle）
-conda run -n fif python scripts/export_labelme.py swd_2024_eachfarm_16mp \
-    site=air1 limit=50 outdir=exports/labelme_air1
+conda run -n fif python scripts/export_labelme.py swd_2024_eachfarm_16mp site=air1 limit=50 outdir=exports/labelme_air1
 #   不给 outdir = 写在图片旁 <img>.json，X-AnyLabeling 打开图片目录自动加载
 
 # 按某阈值把"每图框数"写进字段（可在网格显示/排序；换阈值就重跑）
@@ -73,10 +69,10 @@ conda run -n fif python scripts/app_defaults.py swd_2024_eachfarm_16mp site focu
 ## 工具
 ```bash
 # 采集覆盖热力图（看哪天没数据/不连续）：终端 ASCII + exports/ PNG + 交互 HTML
-conda run -n fif python scripts/coverage.py swd_2025_eachfarm_16mp_north site=air1
+conda run -n fif python scripts/coverage.py swd_2026_eachfarm_16mp site=air1
 #   要 HTML 可点击跳 App：加 links + 基址；用完清理：clearviews
-conda run -n fif python scripts/coverage.py swd_2025_eachfarm_16mp_north site=air1 links https://fiftyone.tianqiyao.men
-conda run -n fif python scripts/coverage.py swd_2025_eachfarm_16mp_north clearviews
+conda run -n fif python scripts/coverage.py swd_2026_eachfarm_16mp site=air1 links https://fiftyone.tianqiyao.men
+conda run -n fif python scripts/coverage.py swd_2026_eachfarm_16mp clearviews
 ```
 
 ## 成批命令（runs/）

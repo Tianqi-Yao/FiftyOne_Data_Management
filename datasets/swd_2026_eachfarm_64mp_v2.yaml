@@ -1,0 +1,89 @@
+# 自动生成的草稿，请人工审阅：改 name、补 defaults、改 location 真实地名、挪放错的目录。
+# 跑: python scripts/import_dataset.py <本文件>
+name: swd_2026_eachfarm_64mp_v2   # TODO 按约定改名，如 swd_<year>_<场>_<device>
+defaults: { year: 2026, device: 64MP, status: cold }   # 所有组共享的字段
+compute_metadata: true
+parse_filename: true
+sources:
+  # ---- ElderFarm1 / auto: 1885 张 ----
+  - set: { site: ElderFarm1, location: Elder Farm, focus: auto }  
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/ElderFarm1/images_0527-0612/autofocus_rpicam_still"   # 1885 张
+  # ---- ElderFarm1 / unknown: 1885 张 ----
+  - set: { site: ElderFarm1, location: Elder Farm, focus: fixed }  
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/ElderFarm1/images_0527-0612/manualfocus_rpicam_still"   # 1885 张
+  # ---- HSH1 / auto: 2008 张 ----
+  - set: { site: HSH1, location: HSH Farm, focus: auto }  
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/HSH1/images_0527-0612/autofocus_rpicam_still"   # 2008 张
+  # ---- HSH1 / unknown: 2005 张 ----
+  - set: { site: HSH1, location: HSH Farm, focus: fixed }  
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/HSH1/images_0527-0612/manualfocus_rpicam_still"   # 2005 张
+  # ---- MSU1 / auto: 1930 张 ----
+  - set: { site: ms1, location: MSU Mountain Grove, focus: auto }  
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/MSU1/images_0527-0612/autofocus_rpicam_still"   # 1930 张
+  # ---- MSU1 / unknown: 1927 张 ----
+  - set: { site: ms1, location: MSU Mountain Grove, focus: fixed }  
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/MSU1/images_0527-0612/manualfocus_rpicam_still"   # 1927 张
+  # ---- MSU2 / auto: 1968 张 ----
+  - set: { site: ms2, location: MSU Mountain Grove, focus: auto }  
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/MSU2/images_0527-0612/autofocus_rpicam_still"   # 1968 张
+  # ---- MSU2 / unknown: 1984 张 ----
+  - set: { site: ms2, location: MSU Mountain Grove, focus: fixed }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/MSU2/images_0527-0612/manualfocus_rpicam_still"   # 1984 张
+  # ---- SW1 / auto: 1946 张 ----
+  - set: { site: sw1, location: Mizzou SW-REEC, focus: auto }  
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/SW1/images_0527-0612/autofocus_rpicam_still"   # 1946 张
+  # ---- SW1 / unknown: 1909 张 ----
+  - set: { site: sw1, location: Mizzou SW-REEC, focus: fixed }   
+    # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+    paths:
+      - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/SW1/images_0527-0612/manualfocus_rpicam_still"   # 1909 张
+  # # ---- air1 / auto: 1896 张 ----
+  # - set: { site: air1, location: air1, focus: auto }   # TODO location
+  #   # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+  #   paths:
+  #     - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/air1/images_0501_0508/autofocus_rpicam_still"   # 257 张
+  #     - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/air1/images_0520-0602/autofocus_rpicam_still"   # 1639 张
+  # # ---- air1 / unknown: 1895 张 ----
+  # - set: { site: air1, location: air1, focus: unknown }   # TODO location
+  #   # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+  #   paths:
+  #     - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/air1/images_0501_0508/manualfocus_rpicam_still"   # 250 张
+  #     - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/air1/images_0520-0602/manualfocus_rpicam_still"   # 1645 张
+  # # ---- air2 / auto: 1303 张 ----
+  # - set: { site: air2, location: air2, focus: auto }   # TODO location
+  #   # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+  #   paths:
+  #     - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/air2/images_0520_0602/autofocus_rpicam_still"   # 1303 张
+  # # ---- air2 / unknown: 1131 张 ----
+  # - set: { site: air2, location: air2, focus: unknown }   # TODO location
+  #   # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+  #   paths:
+  #     - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/air2/images_0520_0602/manualfocus_rpicam_still"   # 1131 张
+  # # ---- jeff / auto: 3773 张 ----
+  # - set: { site: jeff, location: jeff, focus: auto }   # TODO location
+  #   # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+  #   paths:
+  #     - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/jeff/images_0430-0531/autofocus_rpicam_still"   # 3773 张
+  # # ---- jeff / unknown: 3633 张 ----
+  # - set: { site: jeff, location: jeff, focus: unknown }   # TODO location
+  #   # 分辨率(9248x6944)由像素采样确定，目录假定纯净，未加 require_resolution
+  #   paths:
+  #     - "/media/tianqi/16tb/SWD/01_Data/2026_SWD_data_RAW/jeff/images_0430-0531/manualfocus_rpicam_still"   # 3633 张
